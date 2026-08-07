@@ -1,0 +1,5 @@
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+billing_system/frontend/flutter_application/.dart_tool/
