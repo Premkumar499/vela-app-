@@ -53,20 +53,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             Text('ERP Billing System'),
           ],
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            tooltip: 'Refresh',
-            onPressed: _loadSummary,
-          ),
-          IconButton(
-            icon: const Icon(Icons.settings),
-            tooltip: 'Settings',
-            onPressed: () =>
-                Navigator.pushNamed(context, AppConstants.routeSettings),
-          ),
-          const SizedBox(width: 8),
-        ],
+        actions: const [],
       ),
       body: RefreshIndicator(
         onRefresh: _loadSummary,
@@ -109,12 +96,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         Navigator.pushNamed(context, AppConstants.routeHistory),
                   ),
                   _DashTile(
-                    icon: Icons.settings,
-                    label: 'Settings',
-                    subtitle: 'App configuration',
-                    color: AppTheme.textSecondary,
-                    onTap: () =>
-                        Navigator.pushNamed(context, AppConstants.routeSettings),
+                    icon: Icons.people_alt_outlined,
+                    label: 'Customers',
+                    subtitle: 'Manage customer list',
+                    color: Colors.deepPurple,
+                    onTap: () => Navigator.pushNamed(
+                        context, AppConstants.routeCustomers),
                   ),
                 ],
               ),

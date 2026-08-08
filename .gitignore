@@ -3,3 +3,5 @@ __pycache__/
 *.pyo
 .pytest_cache/
 billing_system/frontend/flutter_application/.dart_tool/
+.env
+*.env

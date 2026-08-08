@@ -7,7 +7,6 @@ import '../widgets/customer_card.dart';
 
 /// Customer listing screen.
 /// When [isPicker] is true, tapping returns the selected customer to the caller.
-/// Falls back to the local dummy dataset when the backend is unreachable.
 class CustomersScreen extends StatefulWidget {
   final bool isPicker;
   final Customer? currentCustomer;
@@ -60,7 +59,6 @@ class _CustomersScreenState extends State<CustomersScreen> {
         _isLoading = false;
       });
     } else {
-      // Even on hard failure, show empty list gracefully
       setState(() => _isLoading = false);
     }
   }
@@ -69,6 +67,7 @@ class _CustomersScreenState extends State<CustomersScreen> {
     final query = _searchCtrl.text.toLowerCase();
     setState(() {
       _filtered = _allCustomers.where((c) {
+        if (c.id == '00000000-0000-0000-0000-000000000000') return false;
         return query.isEmpty ||
             c.name.toLowerCase().contains(query) ||
             c.phone.contains(query) ||
@@ -80,7 +79,63 @@ class _CustomersScreenState extends State<CustomersScreen> {
   void _onCustomerTap(Customer customer) {
     if (widget.isPicker) {
       Navigator.pop(context, customer);
+    } else {
+      _showCustomerDetail(customer);
     }
+  }
+
+  void _showCustomerDetail(Customer customer) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (_) => Padding(
+        padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                CircleAvatar(
+                  backgroundColor: AppTheme.primary,
+                  radius: 28,
+                  child: Text(
+                    customer.name[0].toUpperCase(),
+                    style: const TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(customer.name, style: AppTheme.headingMedium),
+                      if (customer.area.isNotEmpty)
+                        Text(customer.area, style: AppTheme.bodySmall),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            const Divider(height: 1),
+            const SizedBox(height: 16),
+            if (customer.phone.isNotEmpty)
+              _DetailRow(Icons.phone, 'Phone', customer.phone),
+            if (customer.email != null && customer.email!.isNotEmpty)
+              _DetailRow(Icons.email_outlined, 'Email', customer.email!),
+            if (customer.address.isNotEmpty)
+              _DetailRow(Icons.location_on_outlined, 'Address', customer.address),
+          ],
+        ),
+      ),
+    );
   }
 
   @override
@@ -121,7 +176,6 @@ class _CustomersScreenState extends State<CustomersScreen> {
       ),
       body: Column(
         children: [
-          // Offline banner
           if (_isOffline)
             Container(
               width: double.infinity,
@@ -167,8 +221,7 @@ class _CustomersScreenState extends State<CustomersScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.person_search,
-                size: 56, color: AppTheme.textSecondary),
+            Icon(Icons.person_search, size: 56, color: AppTheme.textSecondary),
             SizedBox(height: 12),
             Text('No customers found', style: AppTheme.headingMedium),
           ],
@@ -189,6 +242,40 @@ class _CustomersScreenState extends State<CustomersScreen> {
             onTap: () => _onCustomerTap(customer),
           );
         },
+      ),
+    );
+  }
+}
+
+// ── Detail row helper ─────────────────────────────────────────────────────────
+class _DetailRow extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final String value;
+
+  const _DetailRow(this.icon, this.label, this.value);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, size: 18, color: AppTheme.primary),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(label,
+                    style: AppTheme.bodySmall.copyWith(
+                        color: AppTheme.textSecondary, fontSize: 11)),
+                Text(value, style: AppTheme.bodyMedium),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

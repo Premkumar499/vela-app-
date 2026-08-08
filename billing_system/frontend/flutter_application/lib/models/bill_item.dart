@@ -2,7 +2,7 @@ import 'product.dart';
 
 /// A single line in a bill — no GST, total = price × qty − discount.
 class BillItem {
-  final int    productId;
+  final String productId;
   final String productName;
   final String unit;
   double       quantity;
@@ -41,7 +41,7 @@ class BillItem {
       );
 
   factory BillItem.fromJson(Map<String, dynamic> json) => BillItem(
-        productId:       json['product_id'] as int,
+        productId:       json['product_id'].toString(),
         productName:     json['product_name'] as String,
         unit:            json['unit'] as String? ?? 'PCS',
         quantity:        (json['quantity'] as num).toDouble(),

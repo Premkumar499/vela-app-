@@ -10,7 +10,7 @@ from typing import Optional
 
 @dataclass
 class Product:
-    id: int
+    id: str            # UUID from Supabase (e.g. "0ddb5e4f-d5ce-...")
     name: str
     unit: str          # e.g. "KG", "PCS", "LTR"
     price: float       # sale price (final price, no GST)
@@ -18,6 +18,7 @@ class Product:
     stock: float       # available stock quantity
     category: str      # e.g. "Grocery", "Dairy"
     description: Optional[str] = field(default="")
+    image_url: Optional[str] = field(default=None)
 
     # ------------------------------------------------------------------
     # Serialisation
@@ -33,12 +34,13 @@ class Product:
             "stock": self.stock,
             "category": self.category,
             "description": self.description,
+            "image_url": self.image_url,
         }
 
     @classmethod
     def from_dict(cls, data: dict) -> "Product":
         return cls(
-            id=data["id"],
+            id=str(data["id"]),
             name=data["name"],
             unit=data["unit"],
             price=float(data["price"]),
@@ -46,4 +48,5 @@ class Product:
             stock=float(data["stock"]),
             category=data.get("category", "General"),
             description=data.get("description", ""),
+            image_url=data.get("image_url"),
         )

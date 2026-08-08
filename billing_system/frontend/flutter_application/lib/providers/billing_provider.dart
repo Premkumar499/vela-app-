@@ -99,5 +99,5 @@ class BillingProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  bool get canSave => _items.isNotEmpty && _customer.id > 0;
+  bool get canSave => _items.isNotEmpty && _customer.id != '00000000-0000-0000-0000-000000000000';
 }

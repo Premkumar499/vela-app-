@@ -25,13 +25,19 @@ class _BilingualBillDashboardState extends State<BilingualBillDashboard> {
   final String _receiptLanguage = 'bilingual';
   bool _isTranslating = false;
   bool _isSaving = false;
+  bool _autoSaved = false;
   final GlobalKey _receiptKey = GlobalKey();
 
   @override
   void initState() {
     super.initState();
     _loadFromReceiptData(widget.receiptData);
-    WidgetsBinding.instance.addPostFrameCallback((_) => _translateAll());
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await _translateAll();
+      // Small delay to ensure the widget is fully painted after translation
+      await Future.delayed(const Duration(milliseconds: 400));
+      _autoSaveBoth();
+    });
   }
 
   void _loadFromReceiptData(Map<String, dynamic> data) {
@@ -89,8 +95,29 @@ class _BilingualBillDashboardState extends State<BilingualBillDashboard> {
     }
   }
 
-  Future<void> _saveReceipt() async {
-    setState(() => _isSaving = true);
+  /// Automatically save both customer bill and company copy silently on load.
+  Future<void> _autoSaveBoth() async {
+    if (_autoSaved || _billNo.isEmpty || !mounted) return;
+    _autoSaved = true;
+
+    // Save customer bill copy
+    await InvoiceExportService.saveInvoiceAsImage(
+      widgetKey: _receiptKey,
+      invoiceNumber: _billNo,
+      isCompanyInvoice: false,
+    );
+
+    if (!mounted) return;
+
+    // Save company invoice copy (same receipt, different folder)
+    await InvoiceExportService.saveInvoiceAsImage(
+      widgetKey: _receiptKey,
+      invoiceNumber: _billNo,
+      isCompanyInvoice: true,
+    );
+  }
+
+  Future<void> _saveReceipt() async {    setState(() => _isSaving = true);
     final result = await InvoiceExportService.saveInvoiceAsImage(
       widgetKey: _receiptKey,
       invoiceNumber: _billNo,

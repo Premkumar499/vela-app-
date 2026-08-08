@@ -15,6 +15,18 @@ class ProductCard extends StatelessWidget {
     required this.onTap,
   });
 
+  Widget _iconPlaceholder() => Container(
+        width: 56,
+        height: 56,
+        color: AppTheme.primary.withValues(alpha: 0.1),
+        alignment: Alignment.center,
+        child: const Icon(
+          Icons.inventory_2_outlined,
+          color: AppTheme.primary,
+          size: 28,
+        ),
+      );
+
   @override
   Widget build(BuildContext context) {
     final currency = NumberFormat.currency(symbol: '₹', decimalDigits: 2);
@@ -29,18 +41,21 @@ class ProductCard extends StatelessWidget {
           padding: const EdgeInsets.all(12),
           child: Row(
             children: [
-              // Product icon
-              Container(
-                width: 48,
-                height: 48,
-                decoration: BoxDecoration(
-                  color: AppTheme.primary.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: const Icon(
-                  Icons.inventory_2_outlined,
-                  color: AppTheme.primary,
-                  size: 28,
+              // Product image / icon
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: SizedBox(
+                  width: 56,
+                  height: 56,
+                  child: product.imageUrl != null && product.imageUrl!.isNotEmpty
+                      ? Image.network(
+                          product.imageUrl!,
+                          width: 56,
+                          height: 56,
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, __, ___) => _iconPlaceholder(),
+                        )
+                      : _iconPlaceholder(),
                 ),
               ),
               const SizedBox(width: 12),
@@ -73,16 +88,9 @@ class ProductCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
-                    currency.format(product.priceWithGst),
+                    currency.format(product.price),
                     style: AppTheme.headingMedium
                         .copyWith(color: AppTheme.primary),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    'MRP: ${currency.format(product.mrp)}',
-                    style: AppTheme.bodySmall.copyWith(
-                      decoration: TextDecoration.lineThrough,
-                    ),
                   ),
                   const SizedBox(height: 4),
                   Container(

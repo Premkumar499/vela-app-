@@ -25,9 +25,9 @@ def list_customers():
     return jsonify({"success": True, "data": data, "count": len(data)}), 200
 
 
-@customers_bp.get("/<int:customer_id>")
-def get_customer(customer_id: int):
-    """GET /customers/<id>"""
+@customers_bp.get("/<string:customer_id>")
+def get_customer(customer_id: str):
+    """GET /customers/<uuid>"""
     customer = billing_service.get_customer_by_id(customer_id)
     if customer is None:
         return jsonify({"success": False, "message": "Customer not found"}), 404

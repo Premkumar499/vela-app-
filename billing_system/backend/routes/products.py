@@ -29,9 +29,9 @@ def list_products():
     return jsonify({"success": True, "data": data, "count": len(data)}), 200
 
 
-@products_bp.get("/<int:product_id>")
-def get_product(product_id: int):
-    """GET /products/<id>"""
+@products_bp.get("/<string:product_id>")
+def get_product(product_id: str):
+    """GET /products/<uuid>"""
     product = billing_service.get_product_by_id(product_id)
     if product is None:
         return jsonify({"success": False, "message": "Product not found"}), 404

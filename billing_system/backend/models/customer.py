@@ -8,10 +8,11 @@ from typing import Optional
 
 @dataclass
 class Customer:
-    id: int
+    id: str            # UUID from Supabase
     name: str
     phone: str
     address: str
+    email: Optional[str] = field(default="")
     area: Optional[str] = field(default="")
     gstin: Optional[str] = field(default="")
     credit_limit: float = 0.0
@@ -27,6 +28,7 @@ class Customer:
             "name": self.name,
             "phone": self.phone,
             "address": self.address,
+            "email": self.email,
             "area": self.area,
             "gstin": self.gstin,
             "credit_limit": self.credit_limit,
@@ -36,10 +38,11 @@ class Customer:
     @classmethod
     def from_dict(cls, data: dict) -> "Customer":
         return cls(
-            id=data["id"],
+            id=str(data["id"]),
             name=data["name"],
             phone=data.get("phone", ""),
             address=data.get("address", ""),
+            email=data.get("email", ""),
             area=data.get("area", ""),
             gstin=data.get("gstin", ""),
             credit_limit=float(data.get("credit_limit", 0)),

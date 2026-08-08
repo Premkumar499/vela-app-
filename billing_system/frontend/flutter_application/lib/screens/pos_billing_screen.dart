@@ -247,16 +247,24 @@ class _PosBillingScreenState extends State<PosBillingScreen> {
       appBar: AppBar(
         backgroundColor: PosTheme.primary,
         elevation: 0,
-        leading: Padding(
-          padding: const EdgeInsets.all(10),
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.15),
-              borderRadius: BorderRadius.circular(PosTheme.radiusSm),
-            ),
-            child: const Icon(Icons.point_of_sale, color: Colors.white, size: 20),
-          ),
-        ),
+        leading: Navigator.canPop(context)
+            ? IconButton(
+                icon: const Icon(Icons.arrow_back_ios_new_rounded,
+                    color: Colors.white, size: 20),
+                onPressed: () => Navigator.of(context).pop(),
+                tooltip: 'Back',
+              )
+            : Padding(
+                padding: const EdgeInsets.all(10),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(PosTheme.radiusSm),
+                  ),
+                  child: const Icon(Icons.point_of_sale,
+                      color: Colors.white, size: 20),
+                ),
+              ),
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -458,7 +466,7 @@ class _ProductGrid extends StatelessWidget {
   const _ProductGrid({required this.products, required this.onTap});
 
   // Each card is exactly this tall — hard pixel cap, no aspect ratio math.
-  static const double _cardH = 80.0;
+  static const double _cardH = 110.0;
   static const double _gap   = 8.0;
   static const double _pad   = 12.0;
 
@@ -805,10 +813,69 @@ class _ActionButtons extends StatelessWidget {
 }
 
 // ─── Customer Details Input ───────────────────────────────────────────────────
-class _CustomerDetailsInput extends StatelessWidget {
+class _CustomerDetailsInput extends StatefulWidget {
   final BillingProvider provider;
 
   const _CustomerDetailsInput({required this.provider});
+
+  @override
+  State<_CustomerDetailsInput> createState() => _CustomerDetailsInputState();
+}
+
+class _CustomerDetailsInputState extends State<_CustomerDetailsInput> {
+  final TextEditingController _nameCtrl  = TextEditingController();
+  final TextEditingController _phoneCtrl = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    final c = widget.provider.customer;
+    if (c.name != 'Walk-in Customer') _nameCtrl.text = c.name;
+    _phoneCtrl.text = widget.provider.customerPhone;
+  }
+
+  @override
+  void dispose() {
+    _nameCtrl.dispose();
+    _phoneCtrl.dispose();
+    super.dispose();
+  }
+
+  Future<void> _openCustomerPicker() async {
+    final selected = await showModalBottomSheet<Customer>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => const _CustomerPickerSheet(),
+    );
+
+    if (selected == null || !mounted) return;
+
+    // "new" sentinel — clear fields for manual entry
+    if (selected.id == -1) {
+      _nameCtrl.clear();
+      _phoneCtrl.clear();
+      widget.provider.setCustomer(Customer.walkIn);
+      widget.provider.setCustomerPhone('');
+      return;
+    }
+
+    setState(() {
+      _nameCtrl.text  = selected.name;
+      _phoneCtrl.text = selected.phone;
+    });
+    widget.provider.setCustomer(selected);
+    widget.provider.setCustomerPhone(selected.phone);
+  }
+
+  void _onNameChanged(String value) {
+    final c = widget.provider.customer;
+    widget.provider.setCustomer(Customer(
+      id: c.id, name: value.isEmpty ? 'Walk-in Customer' : value,
+      phone: c.phone, address: c.address, area: c.area,
+      gstin: c.gstin, creditLimit: c.creditLimit, balance: c.balance,
+    ));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -820,42 +887,36 @@ class _CustomerDetailsInput extends StatelessWidget {
       ),
       child: Row(
         children: [
-          // Customer Name Input
+          // Customer Name — tap icon to open picker
           Expanded(
             flex: 2,
             child: TextField(
+              controller: _nameCtrl,
+              style: const TextStyle(fontSize: 13),
               decoration: InputDecoration(
                 labelText: 'Customer Name',
-                prefixIcon: const Icon(Icons.person_outline, size: 18),
+                prefixIcon: InkWell(
+                  onTap: _openCustomerPicker,
+                  borderRadius: BorderRadius.circular(20),
+                  child: const Icon(Icons.person_search_outlined, size: 18),
+                ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(PosTheme.radiusSm),
                 ),
                 contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 10,
-                ),
+                    horizontal: 12, vertical: 10),
                 isDense: true,
               ),
-              style: const TextStyle(fontSize: 13),
-              onChanged: (value) {
-                final currentCustomer = provider.customer;
-                provider.setCustomer(Customer(
-                  id: currentCustomer.id,
-                  name: value.isEmpty ? 'Walk-in Customer' : value,
-                  phone: provider.customerPhone,
-                  address: currentCustomer.address,
-                  area: currentCustomer.area,
-                  gstin: currentCustomer.gstin,
-                  creditLimit: currentCustomer.creditLimit,
-                  balance: currentCustomer.balance,
-                ));
-              },
+              onChanged: _onNameChanged,
             ),
           ),
           const SizedBox(width: 12),
-          // Phone Input
+          // Phone
           Expanded(
             child: TextField(
+              controller: _phoneCtrl,
+              style: const TextStyle(fontSize: 13),
+              keyboardType: TextInputType.phone,
               decoration: InputDecoration(
                 labelText: 'Phone',
                 prefixIcon: const Icon(Icons.phone_outlined, size: 18),
@@ -863,17 +924,189 @@ class _CustomerDetailsInput extends StatelessWidget {
                   borderRadius: BorderRadius.circular(PosTheme.radiusSm),
                 ),
                 contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 10,
-                ),
+                    horizontal: 12, vertical: 10),
                 isDense: true,
               ),
-              style: const TextStyle(fontSize: 13),
-              keyboardType: TextInputType.phone,
-              onChanged: (value) {
-                provider.setCustomerPhone(value);
-              },
+              onChanged: (v) => widget.provider.setCustomerPhone(v),
             ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─── Customer Picker Bottom Sheet ─────────────────────────────────────────────
+class _CustomerPickerSheet extends StatefulWidget {
+  const _CustomerPickerSheet();
+
+  @override
+  State<_CustomerPickerSheet> createState() => _CustomerPickerSheetState();
+}
+
+class _CustomerPickerSheetState extends State<_CustomerPickerSheet> {
+  final TextEditingController _searchCtrl = TextEditingController();
+  List<Customer> _all      = [];
+  List<Customer> _filtered = [];
+  bool _loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+    _searchCtrl.addListener(_filter);
+  }
+
+  @override
+  void dispose() {
+    _searchCtrl.dispose();
+    super.dispose();
+  }
+
+  Future<void> _load() async {
+    final result = await ApiService.getCustomers();
+    if (!mounted) return;
+    setState(() {
+      _all      = result.data ?? [];
+      _filtered = _all;
+      _loading  = false;
+    });
+  }
+
+  void _filter() {
+    final q = _searchCtrl.text.toLowerCase();
+    setState(() {
+      _filtered = q.isEmpty
+          ? _all
+          : _all.where((c) =>
+              c.name.toLowerCase().contains(q) ||
+              c.phone.contains(q)).toList();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final maxH = MediaQuery.of(context).size.height * 0.75;
+    return Container(
+      height: maxH,
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      child: Column(
+        children: [
+          // Handle bar
+          Container(
+            margin: const EdgeInsets.only(top: 8),
+            width: 40, height: 4,
+            decoration: BoxDecoration(
+              color: PosTheme.border,
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          // Header
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+            child: Row(
+              children: [
+                Text('Select Customer',
+                    style: PosTheme.subtitle.copyWith(fontSize: 16)),
+                const Spacer(),
+                IconButton(
+                  icon: const Icon(Icons.close_rounded),
+                  onPressed: () => Navigator.pop(context),
+                ),
+              ],
+            ),
+          ),
+          // Search field
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: TextField(
+              controller: _searchCtrl,
+              autofocus: true,
+              style: PosTheme.body,
+              decoration: InputDecoration(
+                hintText: 'Search by name or phone…',
+                prefixIcon: const Icon(Icons.search_rounded,
+                    size: 20, color: PosTheme.textHint),
+                suffixIcon: _searchCtrl.text.isNotEmpty
+                    ? IconButton(
+                        icon: const Icon(Icons.clear, size: 18),
+                        onPressed: _searchCtrl.clear,
+                      )
+                    : null,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(PosTheme.radiusSm),
+                ),
+                isDense: true,
+                contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 12, vertical: 10),
+              ),
+            ),
+          ),
+          const Divider(height: 1, color: PosTheme.border),
+          // New Customer option
+          ListTile(
+            leading: Container(
+              width: 36, height: 36,
+              decoration: BoxDecoration(
+                color: PosTheme.primary.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Icon(Icons.person_add_alt_1_rounded,
+                  color: PosTheme.primary, size: 20),
+            ),
+            title: const Text('New Customer',
+                style: TextStyle(
+                    fontWeight: FontWeight.w600, color: PosTheme.primary)),
+            subtitle: const Text('Enter customer details manually'),
+            onTap: () => Navigator.pop(
+              context,
+              Customer(id: '-1', name: '', phone: '',
+                  address: '', area: '', gstin: '',
+                  creditLimit: 0, balance: 0),
+            ),
+          ),
+          const Divider(height: 1, color: PosTheme.border),
+          // Customer list
+          Expanded(
+            child: _loading
+                ? const Center(child: CircularProgressIndicator())
+                : _filtered.isEmpty
+                    ? Center(
+                        child: Text('No customers found',
+                            style: PosTheme.body.copyWith(
+                                color: PosTheme.textSecondary)),
+                      )
+                    : ListView.builder(
+                        itemCount: _filtered.length,
+                        itemBuilder: (_, i) {
+                          final c = _filtered[i];
+                          return ListTile(
+                            leading: CircleAvatar(
+                              backgroundColor:
+                                  PosTheme.primary.withValues(alpha: 0.12),
+                              radius: 18,
+                              child: Text(
+                                c.name.isNotEmpty
+                                    ? c.name[0].toUpperCase()
+                                    : '?',
+                                style: const TextStyle(
+                                    color: PosTheme.primary,
+                                    fontWeight: FontWeight.w700),
+                              ),
+                            ),
+                            title: Text(c.name,
+                                style: PosTheme.bodyBold
+                                    .copyWith(fontSize: 13)),
+                            subtitle: c.phone.isNotEmpty
+                                ? Text(c.phone, style: PosTheme.small)
+                                : null,
+                            onTap: () => Navigator.pop(context, c),
+                          );
+                        },
+                      ),
           ),
         ],
       ),

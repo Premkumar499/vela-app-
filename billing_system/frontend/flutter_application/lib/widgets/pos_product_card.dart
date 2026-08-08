@@ -94,7 +94,7 @@ class _PosProductCardState extends State<PosProductCard>
       ? widget.product.name[0].toUpperCase()
       : '?';
 
-  Color get _color => PosTheme.avatarColor(widget.product.id);
+  Color get _color => PosTheme.avatarColor(widget.product.id.hashCode);
 
   bool get _lowStock => widget.product.stock < 10;
 
@@ -112,15 +112,16 @@ class _PosProductCardState extends State<PosProductCard>
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 140),
             decoration: _hovered ? PosTheme.cardHovered : PosTheme.card,
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 9),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 // ── Avatar ───────────────────────────────────────────
                 _Avatar(
-                  initial: _initial,
-                  color:   _color,
-                  icon:    _categoryIcon(widget.product.category),
+                  initial:  _initial,
+                  color:    _color,
+                  icon:     _categoryIcon(widget.product.category),
+                  imageUrl: widget.product.imageUrl,
                 ),
                 const SizedBox(width: 10),
 
@@ -134,7 +135,7 @@ class _PosProductCardState extends State<PosProductCard>
                       Text(
                         widget.product.name,
                         style: const TextStyle(
-                          fontSize: 12,
+                          fontSize: 13,
                           fontWeight: FontWeight.w700,
                           color: PosTheme.textPrimary,
                           height: 1.2,
@@ -148,7 +149,7 @@ class _PosProductCardState extends State<PosProductCard>
                       Text(
                         widget.product.category,
                         style: const TextStyle(
-                          fontSize: 10,
+                          fontSize: 11,
                           color: PosTheme.textSecondary,
                         ),
                         maxLines: 1,
@@ -164,7 +165,7 @@ class _PosProductCardState extends State<PosProductCard>
                           Text(
                             '₹${widget.product.price.toStringAsFixed(2)}',
                             style: TextStyle(
-                              fontSize: 13,
+                              fontSize: 14,
                               fontWeight: FontWeight.w800,
                               color: _color,
                             ),
@@ -172,7 +173,7 @@ class _PosProductCardState extends State<PosProductCard>
                           Text(
                             ' /${widget.product.unit}',
                             style: const TextStyle(
-                              fontSize: 10,
+                              fontSize: 11,
                               color: PosTheme.textHint,
                             ),
                           ),
@@ -199,31 +200,52 @@ class _PosProductCardState extends State<PosProductCard>
 
 // ─── Avatar ───────────────────────────────────────────────────────────────────
 class _Avatar extends StatelessWidget {
-  final String  initial;
-  final Color   color;
+  final String   initial;
+  final Color    color;
   final IconData icon;
+  final String?  imageUrl;
 
   const _Avatar({
     required this.initial,
     required this.color,
     required this.icon,
+    this.imageUrl,
   });
+
+  Widget _letterAvatar() => Container(
+        width: 56,
+        height: 56,
+        color: color,
+        alignment: Alignment.center,
+        child: Text(
+          initial,
+          style: const TextStyle(
+            fontSize: 22,
+            fontWeight: FontWeight.w800,
+            color: Colors.white,
+          ),
+        ),
+      );
 
   @override
   Widget build(BuildContext context) {
+    final hasImage = imageUrl != null && imageUrl!.isNotEmpty;
     return Stack(
       clipBehavior: Clip.none,
       children: [
-        CircleAvatar(
-          radius: 20,
-          backgroundColor: color,
-          child: Text(
-            initial,
-            style: const TextStyle(
-              fontSize: 17,
-              fontWeight: FontWeight.w800,
-              color: Colors.white,
-            ),
+        ClipOval(
+          child: SizedBox(
+            width: 56,
+            height: 56,
+            child: hasImage
+                ? Image.network(
+                    imageUrl!,
+                    width: 56,
+                    height: 56,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => _letterAvatar(),
+                  )
+                : _letterAvatar(),
           ),
         ),
         Positioned(

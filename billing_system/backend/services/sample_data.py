@@ -2,6 +2,9 @@ from models.product import Product
 from models.customer import Customer
 
 SAMPLE_PRODUCTS: list[Product] = [
+]
+
+_REMOVED_PRODUCTS: list[Product] = [
     Product(id=1, name='BACKING SODA', unit='KG', price=225.0, mrp=225.0, stock=100.0, category='Primary'),
     Product(id=2, name='BUSH APPLE', unit='Nos', price=95.0, mrp=95.0, stock=100.0, category='Primary'),
     Product(id=3, name='Chippu', unit='Nos', price=10.0, mrp=10.0, stock=100.0, category='Primary'),
