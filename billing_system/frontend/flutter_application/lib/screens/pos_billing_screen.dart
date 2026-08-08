@@ -306,7 +306,22 @@ class _PosBillingScreenState extends State<PosBillingScreen> {
               searchCtrl:   _searchCtrl,
               searchFocus:  _searchFocus,
               onCategory:   _selectCategory,
-              onProduct:    (p) => provider.addProduct(p),
+              onProduct:    (p) {
+                final added = provider.addProduct(p);
+                if (!added) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        p.stock <= 0
+                          ? '${p.name} is out of stock'
+                          : '${p.name} — maximum stock (${p.stock.toInt()}) reached',
+                      ),
+                      backgroundColor: PosTheme.danger,
+                      duration: const Duration(seconds: 2),
+                    ),
+                  );
+                }
+              },
             ),
           ),
           // ── RIGHT PANEL (35%) ───────────────────────────────────────────
@@ -586,7 +601,11 @@ class _RightPanel extends StatelessWidget {
                       return PosBillItemRow(
                         index:      i,
                         item:       item,
-                        onIncrease: () => provider.updateQuantity(i, item.quantity + 1),
+                        onIncrease: () {
+                          final max = item.maxStock;
+                          if (max > 0 && item.quantity >= max) return;
+                          provider.updateQuantity(i, item.quantity + 1);
+                        },
                         onDecrease: () {
                           if (item.quantity > 1) {
                             provider.updateQuantity(i, item.quantity - 1);
@@ -841,6 +860,108 @@ class _CustomerDetailsInputState extends State<_CustomerDetailsInput> {
     super.dispose();
   }
 
+  Future<void> _openNewCustomerForm() async {
+    final nameCtrl    = TextEditingController();
+    final phoneCtrl   = TextEditingController();
+    final emailCtrl   = TextEditingController();
+    final addressCtrl = TextEditingController();
+    bool saving = false;
+
+    final created = await showDialog<Customer>(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setDlg) => AlertDialog(
+          title: const Text('New Customer',
+              style: TextStyle(fontWeight: FontWeight.w700)),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: nameCtrl,
+                  decoration: const InputDecoration(
+                      labelText: 'Name *', border: OutlineInputBorder()),
+                  autofocus: true,
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: phoneCtrl,
+                  keyboardType: TextInputType.phone,
+                  decoration: const InputDecoration(
+                      labelText: 'Phone', border: OutlineInputBorder()),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: emailCtrl,
+                  keyboardType: TextInputType.emailAddress,
+                  decoration: const InputDecoration(
+                      labelText: 'Email', border: OutlineInputBorder()),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: addressCtrl,
+                  decoration: const InputDecoration(
+                      labelText: 'Address', border: OutlineInputBorder()),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: saving ? null : () => Navigator.pop(ctx),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: saving
+                  ? null
+                  : () async {
+                      final name = nameCtrl.text.trim();
+                      if (name.isEmpty) return;
+                      setDlg(() => saving = true);
+                      final result = await ApiService.createCustomer(
+                        name:    name,
+                        phone:   phoneCtrl.text.trim(),
+                        email:   emailCtrl.text.trim(),
+                        address: addressCtrl.text.trim(),
+                      );
+                      if (!ctx.mounted) return;
+                      if (result.success) {
+                        Navigator.pop(ctx, result.data);
+                      } else {
+                        setDlg(() => saving = false);
+                        ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(
+                          content: Text(result.error ?? 'Failed to save customer'),
+                          backgroundColor: PosTheme.danger,
+                        ));
+                      }
+                    },
+              child: saving
+                  ? const SizedBox(
+                      width: 16, height: 16,
+                      child: CircularProgressIndicator(strokeWidth: 2))
+                  : const Text('Save'),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    nameCtrl.dispose();
+    phoneCtrl.dispose();
+    emailCtrl.dispose();
+    addressCtrl.dispose();
+
+    if (created != null && mounted) {
+      setState(() {
+        _nameCtrl.text  = created.name;
+        _phoneCtrl.text = created.phone;
+      });
+      widget.provider.setCustomer(created);
+      widget.provider.setCustomerPhone(created.phone);
+    }
+  }
+
   Future<void> _openCustomerPicker() async {
     final selected = await showModalBottomSheet<Customer>(
       context: context,
@@ -851,12 +972,9 @@ class _CustomerDetailsInputState extends State<_CustomerDetailsInput> {
 
     if (selected == null || !mounted) return;
 
-    // "new" sentinel — clear fields for manual entry
-    if (selected.id == -1) {
-      _nameCtrl.clear();
-      _phoneCtrl.clear();
-      widget.provider.setCustomer(Customer.walkIn);
-      widget.provider.setCustomerPhone('');
+    // "new" sentinel — open form to create customer in DB
+    if (selected.id == '-1') {
+      await _openNewCustomerForm();
       return;
     }
 

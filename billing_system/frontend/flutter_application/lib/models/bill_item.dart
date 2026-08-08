@@ -8,6 +8,7 @@ class BillItem {
   double       quantity;
   final double rate;           // sale price per unit
   double       discountPercent;
+  final double maxStock;       // available stock — 0 means unlimited fallback
 
   BillItem({
     required this.productId,
@@ -16,6 +17,7 @@ class BillItem {
     required this.quantity,
     required this.rate,
     this.discountPercent = 0,
+    this.maxStock = 0,
   });
 
   // ── Computed ─────────────────────────────────────────────────────────────
@@ -38,6 +40,7 @@ class BillItem {
         unit:        p.unit,
         quantity:    quantity,
         rate:        p.price,
+        maxStock:    p.stock,
       );
 
   factory BillItem.fromJson(Map<String, dynamic> json) => BillItem(
@@ -65,5 +68,6 @@ class BillItem {
         quantity:        quantity        ?? this.quantity,
         rate:            rate,
         discountPercent: discountPercent ?? this.discountPercent,
+        maxStock:        maxStock,
       );
 }

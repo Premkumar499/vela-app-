@@ -170,7 +170,9 @@ class _QtyStepper extends StatelessWidget {
           // Plus
           _StepBtn(
             icon: Icons.add,
-            color: PosTheme.primary,
+            color: (item.maxStock > 0 && item.quantity >= item.maxStock)
+                ? PosTheme.textHint
+                : PosTheme.primary,
             onTap: onIncrease,
             roundRight: true,
           ),

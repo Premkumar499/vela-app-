@@ -164,11 +164,11 @@ class _BillHistoryScreenState extends State<BillHistoryScreen>
                 tabs: const [
                   Tab(
                     icon: Icon(Icons.receipt, size: 18),
-                    text: 'Cash Bills',
+                    text: 'User Bill',
                   ),
                   Tab(
                     icon: Icon(Icons.business_center, size: 18),
-                    text: 'Company Invoices',
+                    text: 'Company Bill',
                   ),
                 ],
               ),

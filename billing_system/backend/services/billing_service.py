@@ -258,6 +258,41 @@ class BillingService:
     def get_all_customers(self) -> list[dict]:
         return [c.to_dict() for c in self._customers]
 
+    def create_customer(self, name: str, phone: str = "", email: str = "", address: str = "") -> dict:
+        """Insert a new customer into Supabase and add to in-memory list."""
+        try:
+            from dotenv import load_dotenv
+            from supabase import create_client
+
+            _env_path = os.path.join(os.path.dirname(__file__), "..", ".env")
+            load_dotenv(_env_path, override=True)
+            url = os.getenv("SUPABASE_URL", "")
+            key = os.getenv("SUPABASE_SERVICE_KEY") or os.getenv("SUPABASE_SECRET_KEY") or ""
+
+            sb = create_client(url, key)
+            response = sb.table("customers").insert({
+                "name":    name,
+                "phone":   phone or None,
+                "email":   email or None,
+                "address": address or None,
+            }).execute()
+
+            row = response.data[0]
+            customer = Customer(
+                id=str(row["customer_id"]),
+                name=row.get("name") or name,
+                phone=row.get("phone") or "",
+                address=row.get("address") or "",
+                email=row.get("email") or "",
+            )
+            self._customers.append(customer)
+            return {"success": True, "data": customer.to_dict()}
+
+        except Exception as exc:
+            import traceback
+            traceback.print_exc()
+            return {"success": False, "message": str(exc)}
+
     def get_customer_by_id(self, customer_id: str) -> Optional[dict]:
         for c in self._customers:
             if c.id == customer_id:

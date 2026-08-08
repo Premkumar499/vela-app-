@@ -251,8 +251,39 @@ class ApiService {
     }
   }
 
-  /// Translate a list of texts to Tamil (or [target] language) via the backend.
-  /// Returns originals unchanged if the API key is not configured.
+  /// Create a new customer in the backend (saves to Supabase).
+  static Future<ApiResult<Customer>> createCustomer({
+    required String name,
+    String phone = '',
+    String email = '',
+    String address = '',
+  }) async {
+    try {
+      final response = await _client
+          .post(
+            Uri.parse('${AppConstants.baseUrl}/customers/'),
+            headers: _headers,
+            body: jsonEncode({
+              'name': name,
+              'phone': phone,
+              'email': email,
+              'address': address,
+            }),
+          )
+          .timeout(AppConstants.requestTimeout);
+
+      if (response.statusCode == 201) {
+        final body = jsonDecode(response.body) as Map<String, dynamic>;
+        return ApiResult.ok(
+            Customer.fromJson(body['data'] as Map<String, dynamic>));
+      }
+      return ApiResult.err(_extractError(response));
+    } catch (_) {
+      return const ApiResult.err('Cannot reach server to create customer.');
+    }
+  }
+
+  /// Translate a list of texts to Tamil (or [target] language) via the backend.  /// Returns originals unchanged if the API key is not configured.
   static Future<List<String>> translateToTamil(List<String> texts,
       {String target = 'ta'}) async {
     if (texts.isEmpty) return texts;

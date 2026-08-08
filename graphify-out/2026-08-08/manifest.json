@@ -20,8 +20,8 @@
     "semantic_hash": ""
   },
   "billing_system/backend/data/bills.json": {
-    "mtime": 1786179652.9529202,
-    "ast_hash": "3cc292095a23bf7cbb9823453fda8bdf",
+    "mtime": 1786164044.8298957,
+    "ast_hash": "d2063c3db04bfd7b44cfd8c1854cdb3c",
     "semantic_hash": ""
   },
   "billing_system/backend/models/__init__.py": {
@@ -35,13 +35,13 @@
     "semantic_hash": ""
   },
   "billing_system/backend/models/customer.py": {
-    "mtime": 1786174705.5952299,
-    "ast_hash": "d5c5bc21b3ad7142b414d406740a04d2",
+    "mtime": 1785835756.0,
+    "ast_hash": "e5442feb26a4035dad0145cb359e4758",
     "semantic_hash": ""
   },
   "billing_system/backend/models/product.py": {
-    "mtime": 1786172762.2202394,
-    "ast_hash": "a29eb0138b21f1375b112323a425e326",
+    "mtime": 1785924049.0,
+    "ast_hash": "d48fc78c5c6a479b2cda84591d2c7bca",
     "semantic_hash": ""
   },
   "billing_system/backend/routes/__init__.py": {
@@ -60,8 +60,8 @@
     "semantic_hash": ""
   },
   "billing_system/backend/routes/customers.py": {
-    "mtime": 1786180043.9055395,
-    "ast_hash": "f25e5e6038b9955b0bc03f28bc51eabb",
+    "mtime": 1785835984.0,
+    "ast_hash": "1d056ec653ebc98109f51a5a22a07144",
     "semantic_hash": ""
   },
   "billing_system/backend/routes/history.py": {
@@ -75,8 +75,8 @@
     "semantic_hash": ""
   },
   "billing_system/backend/routes/products.py": {
-    "mtime": 1786170817.862393,
-    "ast_hash": "15b722723da59e2606bf2c5ad07cb98a",
+    "mtime": 1785835962.0,
+    "ast_hash": "288d5beb08c7b050bad2ed27fc850ba9",
     "semantic_hash": ""
   },
   "billing_system/backend/routes/translate.py": {
@@ -90,8 +90,8 @@
     "semantic_hash": ""
   },
   "billing_system/backend/services/billing_service.py": {
-    "mtime": 1786180118.850456,
-    "ast_hash": "ffda062e27a79e98d94620935d791e59",
+    "mtime": 1785991621.8439155,
+    "ast_hash": "de0e32f38428d15ff905a74576d544c3",
     "semantic_hash": ""
   },
   "billing_system/backend/services/language_utils.py": {
@@ -100,8 +100,8 @@
     "semantic_hash": ""
   },
   "billing_system/backend/services/sample_data.py": {
-    "mtime": 1786167728.5399337,
-    "ast_hash": "1dc51ed1b506405e24b7fcd69f5a06f9",
+    "mtime": 1785946124.1248534,
+    "ast_hash": "3425ec40d02ac74e663db5b3c3976378",
     "semantic_hash": ""
   },
   "billing_system/backend/tests/__init__.py": {
@@ -125,13 +125,13 @@
     "semantic_hash": ""
   },
   "billing_system/frontend/flutter_application/lib/models/bill_item.dart": {
-    "mtime": 1786178860.3890417,
-    "ast_hash": "da6aae0829cabf63cdbe3fd378cfb9e8",
+    "mtime": 1785945689.8324168,
+    "ast_hash": "64e793c419aedcf064dda6be9c379ac5",
     "semantic_hash": ""
   },
   "billing_system/frontend/flutter_application/lib/models/customer.dart": {
-    "mtime": 1786174776.1924543,
-    "ast_hash": "410a3bb7f4a6ee95ad125ec769de9fa9",
+    "mtime": 1785836082.0,
+    "ast_hash": "d81fb73037a3916ef4624ae689b4c892",
     "semantic_hash": ""
   },
   "billing_system/frontend/flutter_application/lib/models/invoice_model.dart": {
@@ -140,13 +140,13 @@
     "semantic_hash": ""
   },
   "billing_system/frontend/flutter_application/lib/models/product.dart": {
-    "mtime": 1786172782.9922023,
-    "ast_hash": "a56ecb21c6544c35de82d2c2ab7cc4f2",
+    "mtime": 1785945517.692051,
+    "ast_hash": "04a068f59d16dc3725da10de620d462a",
     "semantic_hash": ""
   },
   "billing_system/frontend/flutter_application/lib/providers/billing_provider.dart": {
-    "mtime": 1786178875.25966,
-    "ast_hash": "1d713b4f7d35af1d771cfcb326b01587",
+    "mtime": 1786074512.8189578,
+    "ast_hash": "4cccd98051e9698f2231713c66c35aaa",
     "semantic_hash": ""
   },
   "billing_system/frontend/flutter_application/lib/screens/bill_details_screen.dart": {
@@ -155,8 +155,8 @@
     "semantic_hash": ""
   },
   "billing_system/frontend/flutter_application/lib/screens/bill_history_screen.dart": {
-    "mtime": 1786180587.3451273,
-    "ast_hash": "132ed4eb0d4195125a76890213b3ccd4",
+    "mtime": 1786095583.745018,
+    "ast_hash": "43d2cfb7edd3199a533f5a314fa19f4d",
     "semantic_hash": ""
   },
   "billing_system/frontend/flutter_application/lib/screens/company_invoice_screen.dart": {
@@ -170,18 +170,18 @@
     "semantic_hash": ""
   },
   "billing_system/frontend/flutter_application/lib/screens/customers_screen.dart": {
-    "mtime": 1786175624.0470066,
-    "ast_hash": "ca00bb2a46f34858d8dd01ef7d952e9b",
+    "mtime": 1785839284.0,
+    "ast_hash": "b56c0c204846beaecd15931b19cc02af",
     "semantic_hash": ""
   },
   "billing_system/frontend/flutter_application/lib/screens/dashboard_screen.dart": {
-    "mtime": 1786165961.9551668,
-    "ast_hash": "3051037c68ba605c1e789e768c7d709a",
+    "mtime": 1786164190.9506602,
+    "ast_hash": "b05df3166c0f19d0e1cd0f837ce42887",
     "semantic_hash": ""
   },
   "billing_system/frontend/flutter_application/lib/screens/pos_billing_screen.dart": {
-    "mtime": 1786180172.8393676,
-    "ast_hash": "aea0c9d001458c82838072660aebf19c",
+    "mtime": 1786164127.9725404,
+    "ast_hash": "2e127b0110be382ace64206c02a5556e",
     "semantic_hash": ""
   },
   "billing_system/frontend/flutter_application/lib/screens/products_screen.dart": {
@@ -205,8 +205,8 @@
     "semantic_hash": ""
   },
   "billing_system/frontend/flutter_application/lib/services/api_service.dart": {
-    "mtime": 1786180139.0244255,
-    "ast_hash": "5fd9721a3154f649bdbe3a1e4d23e405",
+    "mtime": 1786074550.2065039,
+    "ast_hash": "aae1b13a717096a6e5e6746205741fd4",
     "semantic_hash": ""
   },
   "billing_system/frontend/flutter_application/lib/services/bilingual_api_service.dart": {
@@ -220,8 +220,8 @@
     "semantic_hash": ""
   },
   "billing_system/frontend/flutter_application/lib/services/local_data.dart": {
-    "mtime": 1786174892.5753987,
-    "ast_hash": "26aaff1cc178ea9f90066a4f1d3743fd",
+    "mtime": 1785924986.0,
+    "ast_hash": "b397ddd1fdfc9a07ad618536551e97c6",
     "semantic_hash": ""
   },
   "billing_system/frontend/flutter_application/lib/utils/constants.dart": {
@@ -250,8 +250,8 @@
     "semantic_hash": ""
   },
   "billing_system/frontend/flutter_application/lib/widgets/bilingual_bill_dashboard.dart": {
-    "mtime": 1786164609.1819696,
-    "ast_hash": "d649cde150f347d86d56886d52c7fd9c",
+    "mtime": 1786095067.9503088,
+    "ast_hash": "90f984584638b3b9b8954cd4d05f90d8",
     "semantic_hash": ""
   },
   "billing_system/frontend/flutter_application/lib/widgets/billing_table.dart": {
@@ -290,8 +290,8 @@
     "semantic_hash": ""
   },
   "billing_system/frontend/flutter_application/lib/widgets/pos_bill_item_row.dart": {
-    "mtime": 1786178908.3669648,
-    "ast_hash": "8904a0ea1a361c00672eae8779f1333f",
+    "mtime": 1785925206.0,
+    "ast_hash": "25ef980885cdbc005b71f7aee4dda668",
     "semantic_hash": ""
   },
   "billing_system/frontend/flutter_application/lib/widgets/pos_payment_selector.dart": {
@@ -300,8 +300,8 @@
     "semantic_hash": ""
   },
   "billing_system/frontend/flutter_application/lib/widgets/pos_product_card.dart": {
-    "mtime": 1786173763.4986484,
-    "ast_hash": "0172a3e29abf7b6f6dd54b9a7b528b79",
+    "mtime": 1785989207.5392337,
+    "ast_hash": "5a4b086eba8d9cc7c929c72394b48731",
     "semantic_hash": ""
   },
   "billing_system/frontend/flutter_application/lib/widgets/pos_summary_section.dart": {
@@ -310,8 +310,8 @@
     "semantic_hash": ""
   },
   "billing_system/frontend/flutter_application/lib/widgets/product_card.dart": {
-    "mtime": 1786175442.857242,
-    "ast_hash": "673b89376adde6568e40db505df91149",
+    "mtime": 1785837660.0,
+    "ast_hash": "8f60cc275132a56023b0400df86209e6",
     "semantic_hash": ""
   },
   "billing_system/frontend/flutter_application/lib/widgets/quantity_dialog.dart": {
@@ -415,8 +415,8 @@
     "semantic_hash": ""
   },
   "billing_system/backend/requirements.txt": {
-    "mtime": 1786170177.3324451,
-    "ast_hash": "8db173341c9a45c8176c748907ab0a45",
+    "mtime": 1785913569.0,
+    "ast_hash": "805b27d9fbe8db93d0da04aa0d67ffed",
     "semantic_hash": ""
   },
   "billing_system/frontend/flutter_application/README.md": {
@@ -477,16 +477,6 @@
   "billing_system/frontend/flutter_application/assets/images/logo.png": {
     "mtime": 1786016701.069419,
     "ast_hash": "586687e54def84e66ca13954de6cb343",
-    "semantic_hash": ""
-  },
-  "billing_system/backend/invoices/customer_bills/INV0002.png": {
-    "mtime": 1786172961.672019,
-    "ast_hash": "d3f026a5ed7fb421fbe56b96ad7b4e6b",
-    "semantic_hash": ""
-  },
-  "billing_system/backend/invoices/customer_bills/INV0003.png": {
-    "mtime": 1786172973.4108105,
-    "ast_hash": "35b3dd7421fd34c8c85168c758878cd6",
     "semantic_hash": ""
   }
 }

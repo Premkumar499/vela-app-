@@ -53,14 +53,20 @@ class BillingProvider with ChangeNotifier {
   void setRemarks(String v)       { _remarks     = v; notifyListeners(); }
 
   // ── Item management ───────────────────────────────────────────────────────
-  void addProduct(Product product, {double quantity = 1}) {
+  /// Returns false if the product is out of stock.
+  bool addProduct(Product product, {double quantity = 1}) {
+    if (product.stock <= 0) return false;   // no stock at all
     final idx = _items.indexWhere((i) => i.productId == product.id);
     if (idx != -1) {
-      _items[idx].quantity += quantity;
+      final current = _items[idx].quantity;
+      final max     = _items[idx].maxStock;
+      if (max > 0 && current >= max) return false;  // already at stock limit
+      _items[idx].quantity = (current + quantity).clamp(0, max > 0 ? max : double.infinity);
     } else {
       _items.add(BillItem.fromProduct(product, quantity: quantity));
     }
     notifyListeners();
+    return true;
   }
 
   void removeItem(int index) {
@@ -72,7 +78,8 @@ class BillingProvider with ChangeNotifier {
 
   void updateQuantity(int index, double quantity) {
     if (index >= 0 && index < _items.length) {
-      _items[index].quantity = quantity;
+      final max = _items[index].maxStock;
+      _items[index].quantity = max > 0 ? quantity.clamp(1, max) : quantity;
       notifyListeners();
     }
   }

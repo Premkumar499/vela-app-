@@ -1,16 +1,16 @@
 # Graph Report - bill (Copy 3)  (2026-08-08)
 
 ## Corpus Check
-- 84 files · ~75,643 words
+- 84 files · ~62,396 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1213 nodes · 1622 edges · 69 communities (54 shown, 15 thin omitted)
+- 1176 nodes · 1581 edges · 61 communities (50 shown, 11 thin omitted)
 - Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 34 edges (avg confidence: 0.68)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `c2837b97`
+- Built from commit: `59f9ba71`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -74,17 +74,9 @@
 - README.md
 - run.sh
 - String?
-- TestProducts
-- package:flutter/material.dart
-- customers.py
-- products.py
-- TestStock
-- TestDashboard
-- Customer
-- Product
 
 ## God Nodes (most connected - your core abstractions)
-1. `BillingService` - 41 edges
+1. `BillingService` - 38 edges
 2. `_valid_bill()` - 27 edges
 3. `BillingProvider` - 21 edges
 4. `Win32Window` - 19 edges
@@ -102,15 +94,15 @@
   billing_system/backend/tests/test_billing.py → billing_system/backend/app.py
 - `BillingService` --uses--> `Config`  [INFERRED]
   billing_system/backend/services/billing_service.py → billing_system/backend/config.py
-- `_to_tamil()` --calls--> `detect_language()`  [INFERRED]
-  billing_system/backend/routes/translate.py → billing_system/backend/services/language_utils.py
-- `_to_tamil()` --calls--> `transliterate_tanglish_to_tamil()`  [INFERRED]
-  billing_system/backend/routes/translate.py → billing_system/backend/services/language_utils.py
+- `BillingService` --uses--> `BillItem`  [INFERRED]
+  billing_system/backend/services/billing_service.py → billing_system/backend/models/bill.py
+- `BillingService` --uses--> `Bill`  [INFERRED]
+  billing_system/backend/services/billing_service.py → billing_system/backend/models/bill.py
 
 ## Import Cycles
 - None detected.
 
-## Communities (69 total, 15 thin omitted)
+## Communities (61 total, 11 thin omitted)
 
 ### Community 0 - "win32_window.cpp"
 Cohesion: 0.06
@@ -125,12 +117,12 @@ Cohesion: 0.05
 Nodes (44): Bill, _bill, build, _buildBody, child, color, createState, didChangeDependencies (+36 more)
 
 ### Community 3 - "Flask"
-Cohesion: 0.19
-Nodes (10): create_app(), Flask application entry point.  Run:     pip install -r requirements.txt     pyt, Config, Application configuration. All settings are centralised here so they can be over, list_invoices(), Invoice export routes - save invoice images, POST /invoice-export/save     Body (JSON):     {       "invoice_number": "INV002, GET /invoice-export/list/company_invoices     GET /invoice-export/list/customer_ (+2 more)
+Cohesion: 0.05
+Nodes (36): create_app(), Flask application entry point.  Run:     pip install -r requirements.txt     pyt, Config, Application configuration. All settings are centralised here so they can be over, create_simple_bill(), delete_simple_bill(), generate_bill_number(), get_all_simple_bills() (+28 more)
 
 ### Community 4 - "pos_billing_screen.dart"
 Cohesion: 0.04
-Nodes (54): _all, _allProducts, _applyFilter, canSave, _cardH, _categories, controller, createState (+46 more)
+Nodes (46): _allProducts, _applyFilter, canSave, _cardH, _categories, controller, createState, customerName (+38 more)
 
 ### Community 5 - "invoice_preview.dart"
 Cohesion: 0.05
@@ -138,11 +130,11 @@ Nodes (39): Invoice, build, _consolidatedInvoice, ConsolidatedInvoiceScreen, _Co
 
 ### Community 6 - "products_screen.dart"
 Cohesion: 0.05
-Nodes (44): _allCustomers, _applyFilter, build, _buildBody, createState, currentCustomer, CustomersScreen, _CustomersScreenState (+36 more)
+Nodes (40): _allCustomers, _applyFilter, build, _buildBody, createState, currentCustomer, CustomersScreen, _CustomersScreenState (+32 more)
 
 ### Community 7 - "api_service.dart"
-Cohesion: 0.06
-Nodes (34): ApiResult, ApiService, checkHealth, _client, createCustomer, data, deleteBill, err (+26 more)
+Cohesion: 0.05
+Nodes (39): ApiResult, ApiService, checkHealth, _client, data, deleteBill, err, error (+31 more)
 
 ### Community 8 - "theme.dart"
 Cohesion: 0.05
@@ -153,12 +145,12 @@ Cohesion: 0.06
 Nodes (34): addProduct, _area, canSave, clearItems, _customer, _customerPhone, discountTotal, grandTotal (+26 more)
 
 ### Community 10 - "bill_history_screen.dart"
-Cohesion: 0.05
-Nodes (39): _allBills, _applyFilter, bill, BillHistoryScreen, _BillHistoryScreenState, _billKey, billNumber, build (+31 more)
+Cohesion: 0.06
+Nodes (32): _allBills, _applyFilter, bill, _billKey, billNumber, build, _buildBillList, _buildError (+24 more)
 
 ### Community 11 - "bilingual_bill_dashboard.dart"
 Cohesion: 0.06
-Nodes (34): _autoSaveBoth, _autoSaved, _billMeta, _billNo, build, _buildThermalReceipt, createState, _date (+26 more)
+Nodes (32): _billMeta, _billNo, build, _buildThermalReceipt, createState, _date, _divider, initState (+24 more)
 
 ### Community 12 - "invoice_model.dart"
 Cohesion: 0.07
@@ -166,15 +158,15 @@ Nodes (29): accountNo, amount, bankName, companyAddress, companyEmail, companyFs
 
 ### Community 13 - "pos_product_card.dart"
 Cohesion: 0.07
-Nodes (30): _Avatar, build, _categoryIcon, _color, createState, _ctrl, dispose, _hovered (+22 more)
+Nodes (26): _Avatar, build, _categoryIcon, _color, createState, _ctrl, dispose, _hovered (+18 more)
 
 ### Community 14 - "constants.dart"
 Cohesion: 0.08
 Nodes (25): AppConstants, baseUrl, cardRadius, connectionTimeout, defaultPadding, errNoConnection, errServer, errValidation (+17 more)
 
 ### Community 15 - "package:flutter/material.dart"
-Cohesion: 0.14
-Nodes (13): build, customer, CustomerCard, isSelected, onTap, build, _getColorForCategory, _getIconForCategory (+5 more)
+Cohesion: 0.09
+Nodes (23): build, customer, CustomerCard, isSelected, onTap, build, _getColorForCategory, _getIconForCategory (+15 more)
 
 ### Community 16 - "Supabase Database Architecture — ERP Billing System"
 Cohesion: 0.08
@@ -185,56 +177,56 @@ Cohesion: 0.08
 Nodes (23): bill_item.dart, area, Bill, billNumber, customerId, customerName, customerPhone, date (+15 more)
 
 ### Community 18 - "Bill"
-Cohesion: 0.05
-Nodes (15): Bill, BillItem, Bill and BillItem models., Customer, Product, Product model – plain Python dataclass. No ORM dependency so the migration path, BillingService, Customer (+7 more)
+Cohesion: 0.10
+Nodes (6): Bill, BillItem, Bill and BillItem models., Customer, Product, Product model – plain Python dataclass. No ORM dependency so the migration path
 
 ### Community 19 - "BillingService"
-Cohesion: 0.17
-Nodes (11): create_simple_bill(), delete_simple_bill(), generate_bill_number(), get_all_simple_bills(), get_simple_bill(), Simplified Bilingual Billing Routes - for Vela Agency Bill System, Generate next bill number without creating a bill, Create a new simplified bill (+3 more)
+Cohesion: 0.12
+Nodes (4): BillingService, Central service that owns every in-memory collection., Load bills from disk on startup., Persist bills to disk.
 
 ### Community 20 - "test_billing.py"
-Cohesion: 0.20
-Nodes (5): BillingService – in-memory data store with JSON file persistence for bills. Prod, client(), Comprehensive test suite for BillingService and Flask API endpoints.  Run:     c, service(), TestHoldBill
+Cohesion: 0.09
+Nodes (7): BillingService – in-memory data store with JSON file persistence for bills., client(), Comprehensive test suite for BillingService and Flask API endpoints.  Run:     c, service(), TestDashboard, TestHoldBill, TestProducts
 
 ### Community 21 - "BillingProvider"
-Cohesion: 0.14
-Nodes (14): GrandTotalCard, isCount, label, _SummaryItem, value, valuePrefix, amount, build (+6 more)
+Cohesion: 0.11
+Nodes (21): BillingProvider, _cancelBill, _newBill, _saveBill, build, GrandTotalCard, isCount, label (+13 more)
 
 ### Community 22 - "_valid_bill"
-Cohesion: 0.20
-Nodes (3): TestBillValidation, TestCreateBill, _valid_bill()
+Cohesion: 0.16
+Nodes (4): TestBillValidation, TestCreateBill, TestStock, _valid_bill()
 
 ### Community 23 - "receipt_widget.dart"
 Cohesion: 0.09
 Nodes (21): build, _buildBillDetails, _buildHeader, _buildItemsList, _buildSummary, _buildTableHeader, _buildTotal, _company (+13 more)
 
 ### Community 24 - "bill_item.dart"
-Cohesion: 0.05
-Nodes (37): BillItem, copyWith, discountAmount, discountPercent, fromJson, fromProduct, grossAmount, gstAmount (+29 more)
+Cohesion: 0.10
+Nodes (20): BillItem, copyWith, discountAmount, discountPercent, fromJson, fromProduct, grossAmount, gstAmount (+12 more)
 
 ### Community 25 - "dashboard_screen.dart"
 Cohesion: 0.10
 Nodes (20): _ActionGrid, color, createState, DashboardScreen, _DashboardScreenState, _DashTile, icon, initState (+12 more)
 
 ### Community 26 - "pos_bill_item_row.dart"
-Cohesion: 0.07
-Nodes (32): _BillTile, _InlineCashBill, _ActionButtons, _BillHeader, _BillTableHeader, _CategoryChips, _ConfirmDialog, _EmptyProducts (+24 more)
+Cohesion: 0.10
+Nodes (19): build, color, _DeleteButton, _formatQty, icon, index, item, label (+11 more)
 
 ### Community 27 - "bottom_toolbar.dart"
 Cohesion: 0.11
 Nodes (17): BottomToolbar, build, color, icon, isLoading, isSaving, label, onCancel (+9 more)
 
 ### Community 28 - "language_utils.py"
-Cohesion: 0.30
-Nodes (11): detect_language(), _has_ascii_alpha(), _has_tamil_unicode(), _keyword_score(), Language, normalize_query(), Multilingual language detection for English, Tamil, and Tanglish., _syllable_score() (+3 more)
+Cohesion: 0.21
+Nodes (15): Local translation endpoint — no external API needed.  Uses the built-in Tanglish, Best-effort convert any text to Tamil script., _to_tamil(), translate(), detect_language(), _has_ascii_alpha(), _has_tamil_unicode(), _keyword_score() (+7 more)
 
 ### Community 29 - "quantity_dialog.dart"
 Cohesion: 0.12
 Nodes (16): build, color, createState, _decrement, enabled, icon, _increment, initialQuantity (+8 more)
 
 ### Community 30 - "product.dart"
-Cohesion: 0.22
-Nodes (7): create_bill(), Billing routes – create a new bill., POST /bill/     Body (JSON):     {       "customer_id": 1,       "customer_name", Local translation endpoint — no external API needed.  Uses the built-in Tanglish, Best-effort convert any text to Tamil script., _to_tamil(), translate()
+Cohesion: 0.12
+Nodes (15): category, description, fromJson, gst, id, mrp, name, price (+7 more)
 
 ### Community 31 - "settings_screen.dart"
 Cohesion: 0.13
@@ -245,31 +237,31 @@ Cohesion: 0.13
 Nodes (14): BillingApp, build, main, package:flutter/services.dart, screens/bill_details_screen.dart, screens/bill_history_screen.dart, screens/company_invoice_screen.dart, screens/consolidated_invoice_screen.dart (+6 more)
 
 ### Community 33 - "customer.dart"
-Cohesion: 0.12
-Nodes (15): address, area, balance, creditLimit, Customer, email, fromJson, gstin (+7 more)
+Cohesion: 0.13
+Nodes (14): address, area, balance, creditLimit, Customer, fromJson, gstin, id (+6 more)
 
 ### Community 34 - "State"
-Cohesion: 0.27
-Nodes (10): BillDetailsScreen, _BillDetailsScreenState, _CustomerDetailsInput, _CustomerDetailsInputState, _CustomerPickerSheet, _CustomerPickerSheetState, PosBillingScreen, _PosBillingScreenState (+2 more)
+Cohesion: 0.20
+Nodes (15): BillDetailsScreen, _BillDetailsScreenState, BillHistoryScreen, _BillHistoryScreenState, _CashBillPreviewScreen, _CashBillPreviewScreenState, PosBillingScreen, _PosBillingScreenState (+7 more)
 
 ### Community 35 - "StatelessWidget"
-Cohesion: 0.20
-Nodes (9): build, _Chip, color, _iconPlaceholder, label, onTap, product, ProductCard (+1 more)
+Cohesion: 0.14
+Nodes (14): _BillTile, _InlineCashBill, _ActionButtons, _BillHeader, _BillTableHeader, _CategoryChips, _ConfirmDialog, _CustomerDetailsInput (+6 more)
 
 ### Community 36 - "pos_payment_selector.dart"
-Cohesion: 0.13
-Nodes (14): build, icon, isSelected, label, method, _methods, onChanged, onTap (+6 more)
+Cohesion: 0.14
+Nodes (13): build, icon, isSelected, label, method, _methods, onChanged, onTap (+5 more)
 
 ### Community 37 - "pos_summary_section.dart"
-Cohesion: 0.15
-Nodes (12): build, discountTotal, grandTotal, icon, label, PosSummarySection, _Row, subtotal (+4 more)
+Cohesion: 0.14
+Nodes (13): build, discountTotal, grandTotal, icon, label, PosSummarySection, _Row, subtotal (+5 more)
 
 ### Community 38 - "splash_screen.dart"
-Cohesion: 0.14
-Nodes (14): Animation, AnimationController, _animController, build, _checkBackendAndNavigate, createState, dispose, _fadeAnim (+6 more)
+Cohesion: 0.15
+Nodes (12): Animation, AnimationController, _animController, build, _checkBackendAndNavigate, createState, dispose, _fadeAnim (+4 more)
 
 ### Community 39 - "wWinMain"
-Cohesion: 0.25
+Cohesion: 0.24
 Nodes (9): wWinMain(), string, wchar_t, CreateAndAttachConsole(), GetCommandLineArguments(), Utf8FromUtf16(), _In_, _In_opt_ (+1 more)
 
 ### Community 41 - "billing_table.dart"
@@ -281,8 +273,8 @@ Cohesion: 0.20
 Nodes (9): build, index, item, ModernCartItem, onDecrease, onDelete, onIncrease, BillItem (+1 more)
 
 ### Community 43 - "top_panel.dart"
-Cohesion: 0.20
-Nodes (9): billNumber, build, date, icon, _InfoTile, label, TopPanel, value (+1 more)
+Cohesion: 0.22
+Nodes (8): billNumber, date, icon, _InfoTile, label, value, package:provider/provider.dart, ../utils/constants.dart
 
 ### Community 44 - "currency_formatter.dart"
 Cohesion: 0.25
@@ -293,8 +285,8 @@ Cohesion: 0.29
 Nodes (6): customers, LocalData, products, ../models/customer.dart, ../models/product.dart, static final List
 
 ### Community 48 - "build"
-Cohesion: 0.40
-Nodes (5): build, AppConstants.routeBilling, AppConstants.routeCustomers, AppConstants.routeHistory, AppConstants.routeProducts
+Cohesion: 0.50
+Nodes (4): build, AppConstants.routeBilling, AppConstants.routeHistory, AppConstants.routeProducts
 
 ### Community 49 - "widget_test.dart"
 Cohesion: 0.50
@@ -304,41 +296,25 @@ Nodes (3): main, package:billing_system/main.dart, package:flutter_test/flutter_
 Cohesion: 0.67
 Nodes (3): _SawToothPainter, _SawToothPainter, CustomPainter
 
-### Community 53 - "_openCashBill"
-Cohesion: 0.22
-Nodes (8): delete_bill(), get_bill(), list_bills(), GET /bills/ – return all bills, newest first., GET /bills/<bill_number>, DELETE /bills/<bill_number>, GET /bills/summary – dashboard totals., summary()
-
-### Community 54 - "build"
-Cohesion: 0.25
-Nodes (8): BillingProvider, build, _cancelBill, _newBill, _saveBill, build, ChangeNotifier, AppConstants.routeSettings
-
-### Community 62 - "package:flutter/material.dart"
-Cohesion: 0.25
-Nodes (7): baseUrl, InvoiceExportService, saveInvoiceAsImage, dart:typed_data, dart:ui, package:flutter/material.dart, package:flutter/rendering.dart
-
-### Community 63 - "customers.py"
-Cohesion: 0.29
-Nodes (6): create_customer(), get_customer(), list_customers(), GET /customers/     Optional query params:       ?search=abc   – search by name, GET /customers/<uuid>, POST /customers/     Body: { "name": str, "phone": str, "email": str, "address":
-
 ## Knowledge Gaps
-- **693 isolated node(s):** `main`, `build`, `Bill`, `billNumber`, `date` (+688 more)
+- **672 isolated node(s):** `main`, `build`, `Bill`, `billNumber`, `date` (+667 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **15 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **11 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `BillingService` connect `Bill` to `TestStock`, `TestDashboard`, `Flask`, `TestAPI`, `TestBillRetrievalDeletion`, `TestCustomers`, `test_billing.py`, `_valid_bill`, `TestProducts`?**
+- **Why does `BillingProvider` connect `BillingProvider` to `main.dart`, `State`, `pos_billing_screen.dart`, `billing_provider.dart`, `top_panel.dart`, `build`, `build`, `dashboard_screen.dart`?**
   _High betweenness centrality (0.016) - this node is a cross-community bridge._
-- **Why does `BillingProvider` connect `build` to `main.dart`, `State`, `pos_billing_screen.dart`, `billing_provider.dart`, `top_panel.dart`, `build`, `BillingProvider`, `dashboard_screen.dart`?**
-  _High betweenness centrality (0.016) - this node is a cross-community bridge._
-- **Why does `Invoice` connect `invoice_preview.dart` to `invoice_model.dart`?**
-  _High betweenness centrality (0.005) - this node is a cross-community bridge._
+- **Why does `BillingService` connect `BillingService` to `Flask`, `TestAPI`, `TestBillRetrievalDeletion`, `TestCustomers`, `Bill`, `test_billing.py`, `_valid_bill`?**
+  _High betweenness centrality (0.014) - this node is a cross-community bridge._
+- **Why does `build` connect `build` to `dashboard_screen.dart`, `BillingProvider`?**
+  _High betweenness centrality (0.009) - this node is a cross-community bridge._
 - **Are the 16 inferred relationships involving `BillingService` (e.g. with `Config` and `Bill`) actually correct?**
   _`BillingService` has 16 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `main`, `build`, `Bill` to the rest of the system?**
-  _693 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _672 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `win32_window.cpp` be split into smaller, more focused modules?**
-  _Cohesion score 0.05555555555555555 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.05683563748079877 - nodes in this community are weakly interconnected._
 - **Should `pos_theme.dart` be split into smaller, more focused modules?**
   _Cohesion score 0.03773584905660377 - nodes in this community are weakly interconnected._
