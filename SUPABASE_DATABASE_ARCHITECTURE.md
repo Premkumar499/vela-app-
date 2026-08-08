@@ -298,6 +298,7 @@ def create_bill(payload):
          "rate": it["rate"], "discount_percent": it.get("discount_percent", 0)}
         for it in payload["items"]
     ]
+    
     data, count = sb.rpc("create_bill", {
         "p_customer_id": payload["customer_id"],
         "p_customer_name": payload["customer_name"],

@@ -1,5 +1,5 @@
 {
-  "counter": 32,
+  "counter": 34,
   "bills": [
     {
       "bill_number": "INV0001",
@@ -1488,6 +1488,94 @@
       "discount_total": 0.0,
       "grand_total": 450.0,
       "item_count": 1
+    },
+    {
+      "bill_number": "INV0033",
+      "date": "2026-08-07T14:32:07.966616",
+      "customer_id": 1,
+      "customer_name": "Walk-in Customer",
+      "customer_phone": "",
+      "payment_type": "Cash",
+      "sales_type": "Retail",
+      "through": "",
+      "area": "",
+      "price_list": "Retail",
+      "remarks": "",
+      "items": [
+        {
+          "product_id": 19,
+          "product_name": "Tissue Paper",
+          "unit": "Nos",
+          "quantity": 1.0,
+          "rate": 23.53,
+          "discount_percent": 0.0,
+          "discount_amount": 0.0,
+          "total": 23.53
+        },
+        {
+          "product_id": 15,
+          "product_name": "Rusk Powder",
+          "unit": "KG",
+          "quantity": 1.0,
+          "rate": 95.0,
+          "discount_percent": 0.0,
+          "discount_amount": 0.0,
+          "total": 95.0
+        }
+      ],
+      "subtotal": 118.53,
+      "discount_total": 0.0,
+      "grand_total": 118.53,
+      "item_count": 2
+    },
+    {
+      "bill_number": "INV0034",
+      "date": "2026-08-07T14:40:51.156450",
+      "customer_id": 1,
+      "customer_name": "Walk-in Customer",
+      "customer_phone": "",
+      "payment_type": "Cash",
+      "sales_type": "Retail",
+      "through": "",
+      "area": "",
+      "price_list": "Retail",
+      "remarks": "",
+      "items": [
+        {
+          "product_id": 15,
+          "product_name": "Rusk Powder",
+          "unit": "KG",
+          "quantity": 1.0,
+          "rate": 95.0,
+          "discount_percent": 0.0,
+          "discount_amount": 0.0,
+          "total": 95.0
+        },
+        {
+          "product_id": 19,
+          "product_name": "Tissue Paper",
+          "unit": "Nos",
+          "quantity": 1.0,
+          "rate": 23.53,
+          "discount_percent": 0.0,
+          "discount_amount": 0.0,
+          "total": 23.53
+        },
+        {
+          "product_id": 20,
+          "product_name": "Tooth Brush",
+          "unit": "Nos",
+          "quantity": 1.0,
+          "rate": 12.0,
+          "discount_percent": 0.0,
+          "discount_amount": 0.0,
+          "total": 12.0
+        }
+      ],
+      "subtotal": 130.53,
+      "discount_total": 0.0,
+      "grand_total": 130.53,
+      "item_count": 3
     }
   ]
 }
