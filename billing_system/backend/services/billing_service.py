@@ -80,19 +80,18 @@ class BillingService:
     # ------------------------------------------------------------------
 
     def _seed_hour_counter(self) -> None:
-        """On startup, find the highest sequence for the current hour from DB."""
+        """Sync in-memory counter with the highest sequence in DB for the current hour."""
         now = datetime.now()
         prefix = now.strftime("%Y%b%d").upper() + Config.INVOICE_CONSTANT + now.strftime("%H")
         try:
             sb = _get_supabase()
             resp = sb.table("erp_billing_system").select("bill_no").execute()
-            seqs = []
-            for row in resp.data:
-                bn = row.get("bill_no", "")
-                if bn.startswith(prefix):
-                    tail = bn[len(prefix):]
-                    if tail.isdigit():
-                        seqs.append(int(tail))
+            seqs = [
+                int(bn[len(prefix):])
+                for row in resp.data
+                for bn in [row.get("bill_no", "")]
+                if bn.startswith(prefix) and bn[len(prefix):].isdigit()
+            ]
             self._hour_prefix = prefix
             self._hour_seq = max(seqs, default=0)
         except Exception:
@@ -102,10 +101,11 @@ class BillingService:
     def _next_bill_number(self) -> str:
         now = datetime.now()
         current_prefix = now.strftime("%Y%b%d").upper() + Config.INVOICE_CONSTANT + now.strftime("%H")
-        # Reset counter when hour changes
+        # Hour rolled over — re-seed from DB for the new hour
         if current_prefix != self._hour_prefix:
             self._hour_prefix = current_prefix
             self._hour_seq = 0
+            self._seed_hour_counter()
         self._hour_seq += 1
         return self._hour_prefix + str(self._hour_seq)
 
@@ -408,7 +408,7 @@ class BillingService:
         try:
             sb = _get_supabase()
 
-            # ── 1. Delete from erp_billing_system (items cascade via FK or delete manually) ──
+            # ── 1. User bill DB (items auto-cascade via FK ON DELETE CASCADE) ──
             user_rows = (
                 sb.table("erp_billing_system")
                 .select("bill_id")
@@ -418,12 +418,10 @@ class BillingService:
             if not user_rows:
                 return {"success": False, "message": f"Bill {bill_number} not found"}
 
-            bill_id = user_rows[0]["bill_id"]
-            # Delete items first (in case no CASCADE is set on FK)
-            sb.table("erp_billing_system_items").delete().eq("bill_id", bill_id).execute()
-            sb.table("erp_billing_system").delete().eq("bill_id", bill_id).execute()
+            sb.table("erp_billing_system").delete().eq("bill_id", user_rows[0]["bill_id"]).execute()
+            print(f"[delete_bill] erp_billing_system deleted: {bill_number}")
 
-            # ── 2. Delete matching company invoice by invoice_no ──────────
+            # ── 2. Company invoice DB (items auto-cascade via FK ON DELETE CASCADE) ──
             company_rows = (
                 sb.table("erp_billing_system_company")
                 .select("invoice_id")
@@ -431,9 +429,23 @@ class BillingService:
                 .execute()
             ).data
             if company_rows:
-                invoice_id = company_rows[0]["invoice_id"]
-                sb.table("erp_billing_system_company_items").delete().eq("invoice_id", invoice_id).execute()
-                sb.table("erp_billing_system_company").delete().eq("invoice_id", invoice_id).execute()
+                sb.table("erp_billing_system_company").delete().eq("invoice_id", company_rows[0]["invoice_id"]).execute()
+                print(f"[delete_bill] erp_billing_system_company deleted: {bill_number}")
+            else:
+                print(f"[delete_bill] No matching company invoice found for: {bill_number}")
+
+            # ── 3. Delete PDFs from both Storage buckets ─────────────────
+            pdf_file = f"{bill_number}.pdf"
+            for bucket in ("erp_billing_system", "erp_billing_system_company"):
+                try:
+                    sb.storage.from_(bucket).remove([pdf_file])
+                    print(f"[delete_bill] Storage bucket '{bucket}' removed: {pdf_file}")
+                except Exception as bucket_exc:
+                    # File may not exist in bucket — not a fatal error
+                    print(f"[delete_bill] Storage bucket '{bucket}' skip ({bucket_exc})")
+
+            # ── 4. Re-sync hour counter so next bill continues from real max ──
+            self._seed_hour_counter()
 
             return {"success": True, "message": f"Bill {bill_number} deleted"}
         except Exception as exc:
