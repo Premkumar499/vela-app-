@@ -34,3 +34,7 @@ supabase==2.9.1
 # JSON handling (built-in, no need to install)
 # Additional utilities
 click==8.1.7
+
+# PDF generation (image → PDF conversion)
+Pillow==10.3.0
+reportlab==4.2.0

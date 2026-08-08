@@ -113,13 +113,13 @@ class _CompanyInvoiceScreenState extends State<CompanyInvoiceScreen> {
 
   Invoice _billToInvoice(Bill bill) {
     final dateFormat = DateFormat('dd MMM yyyy');
+    final timeFormat = DateFormat('hh:mm a');
     final billDate = DateTime.tryParse(bill.date) ?? DateTime.now();
-    
-    // Convert bill items to invoice items (without HSN)
+
     final invoiceItems = bill.items.map((item) {
       return InvoiceItem(
         description: '${item.productName}\nUnit: ${item.unit}',
-        hsn: '', // Hide HSN
+        hsn: '',
         unit: item.unit,
         qty: item.quantity,
         rate: item.rate,
@@ -129,12 +129,13 @@ class _CompanyInvoiceScreenState extends State<CompanyInvoiceScreen> {
     return Invoice(
       invoiceNo: bill.billNumber,
       invoiceDate: dateFormat.format(billDate),
+      invoiceTime: timeFormat.format(billDate),
       customerName: bill.customerName,
-      customerAddress: bill.customerPhone.isNotEmpty 
-          ? 'Phone: ${bill.customerPhone}' 
+      customerAddress: bill.customerPhone.isNotEmpty
+          ? 'Phone: ${bill.customerPhone}'
           : 'Walk-in Customer',
-      customerGstin: '', // Hide GSTIN
-      customerPan: '', // Hide PAN
+      customerGstin: '',
+      customerPan: '',
       paymentMode: bill.paymentType,
       txnId: bill.billNumber,
       upiId: bill.paymentType == 'UPI' ? 'sample@upi' : 'N/A',

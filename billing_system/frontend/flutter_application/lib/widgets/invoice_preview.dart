@@ -120,6 +120,10 @@ class InvoicePreview extends StatelessWidget {
               _metaRow('Invoice No:', invoice.invoiceNo),
               const SizedBox(height: 4),
               _metaRow('Date:', invoice.invoiceDate),
+              if (invoice.invoiceTime.isNotEmpty) ...[
+                const SizedBox(height: 4),
+                _metaRow('Time:', invoice.invoiceTime),
+              ],
             ],
           ),
         ),

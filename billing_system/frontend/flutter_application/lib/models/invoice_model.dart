@@ -47,6 +47,7 @@ class Invoice {
   // Dynamic fields (supplied via JSON)
   final String invoiceNo;
   final String invoiceDate;
+  final String invoiceTime;
   final String customerName;
   final String customerAddress;
   final String customerGstin;
@@ -59,6 +60,7 @@ class Invoice {
   Invoice({
     required this.invoiceNo,
     required this.invoiceDate,
+    this.invoiceTime = '',
     required this.customerName,
     required this.customerAddress,
     required this.customerGstin,
@@ -76,6 +78,7 @@ class Invoice {
     return Invoice(
       invoiceNo: json['invoiceNo']?.toString() ?? '',
       invoiceDate: json['invoiceDate']?.toString() ?? '',
+      invoiceTime: json['invoiceTime']?.toString() ?? '',
       customerName: customer['name']?.toString() ?? '',
       customerAddress: customer['address']?.toString() ?? '',
       customerGstin: customer['gstin']?.toString() ?? '',

@@ -21,8 +21,8 @@ class Config:
     ]
 
     # Billing
-    INVOICE_PREFIX: str = "INV"
-    INVOICE_PADDING: int = 4          # INV0001, INV0002 …
+    # Invoice number format: 2026AUG08A1633  (YYYYMMMDDAHHMM)
+    INVOICE_CONSTANT: str = "A"   # constant letter between date and time
 
     # GST slabs supported by the system
     GST_SLABS: list = [0, 5, 12, 18, 28]
