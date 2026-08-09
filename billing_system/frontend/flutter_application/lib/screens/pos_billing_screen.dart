@@ -856,7 +856,6 @@ class _CustomerDetailsInputState extends State<_CustomerDetailsInput> {
   Future<void> _openNewCustomerForm() async {
     final nameCtrl    = TextEditingController();
     final phoneCtrl   = TextEditingController();
-    final emailCtrl   = TextEditingController();
     final addressCtrl = TextEditingController();
     bool saving = false;
 
@@ -886,13 +885,6 @@ class _CustomerDetailsInputState extends State<_CustomerDetailsInput> {
                 ),
                 const SizedBox(height: 12),
                 TextField(
-                  controller: emailCtrl,
-                  keyboardType: TextInputType.emailAddress,
-                  decoration: const InputDecoration(
-                      labelText: 'Email', border: OutlineInputBorder()),
-                ),
-                const SizedBox(height: 12),
-                TextField(
                   controller: addressCtrl,
                   decoration: const InputDecoration(
                       labelText: 'Address', border: OutlineInputBorder()),
@@ -915,7 +907,7 @@ class _CustomerDetailsInputState extends State<_CustomerDetailsInput> {
                       final result = await ApiService.createCustomer(
                         name:    name,
                         phone:   phoneCtrl.text.trim(),
-                        email:   emailCtrl.text.trim(),
+                        email:   '',
                         address: addressCtrl.text.trim(),
                       );
                       if (!ctx.mounted) return;
@@ -942,7 +934,6 @@ class _CustomerDetailsInputState extends State<_CustomerDetailsInput> {
 
     nameCtrl.dispose();
     phoneCtrl.dispose();
-    emailCtrl.dispose();
     addressCtrl.dispose();
 
     if (created != null && mounted) {
@@ -990,55 +981,120 @@ class _CustomerDetailsInputState extends State<_CustomerDetailsInput> {
 
   @override
   Widget build(BuildContext context) {
+    final customerName = _nameCtrl.text.isNotEmpty
+        ? _nameCtrl.text
+        : 'Walk-in Customer';
+    final phone = _phoneCtrl.text;
+    final hasCustomer = _nameCtrl.text.isNotEmpty;
+
     return Container(
-      padding: const EdgeInsets.all(PosTheme.padMd),
+      padding: const EdgeInsets.symmetric(
+          horizontal: PosTheme.padMd, vertical: 10),
       decoration: const BoxDecoration(
         color: Colors.white,
         border: Border(bottom: BorderSide(color: PosTheme.border)),
       ),
       child: Row(
         children: [
-          // Customer Name — tap icon to open picker
+          // ── Customer selector box ──────────────────────────────────
           Expanded(
-            flex: 2,
-            child: TextField(
-              controller: _nameCtrl,
-              style: const TextStyle(fontSize: 13),
-              decoration: InputDecoration(
-                labelText: 'Customer Name',
-                prefixIcon: InkWell(
-                  onTap: _openCustomerPicker,
-                  borderRadius: BorderRadius.circular(20),
-                  child: const Icon(Icons.person_search_outlined, size: 18),
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(PosTheme.radiusSm),
-                ),
-                contentPadding: const EdgeInsets.symmetric(
+            flex: 3,
+            child: GestureDetector(
+              onTap: _openCustomerPicker,
+              child: Container(
+                padding: const EdgeInsets.symmetric(
                     horizontal: 12, vertical: 10),
-                isDense: true,
+                decoration: BoxDecoration(
+                  color: hasCustomer
+                      ? PosTheme.primary.withValues(alpha: 0.05)
+                      : const Color(0xFFF5F7FA),
+                  borderRadius:
+                      BorderRadius.circular(PosTheme.radiusSm),
+                  border: Border.all(
+                    color: hasCustomer
+                        ? PosTheme.primary
+                        : PosTheme.border,
+                    width: hasCustomer ? 1.5 : 1,
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    CircleAvatar(
+                      radius: 14,
+                      backgroundColor: hasCustomer
+                          ? PosTheme.primary
+                          : PosTheme.border,
+                      child: Text(
+                        hasCustomer
+                            ? customerName[0].toUpperCase()
+                            : '?',
+                        style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.white),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            customerName,
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                              color: hasCustomer
+                                  ? PosTheme.primary
+                                  : PosTheme.textSecondary,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          if (phone.isNotEmpty)
+                            Text(
+                              phone,
+                              style: PosTheme.small.copyWith(
+                                  color: PosTheme.textSecondary),
+                            )
+                          else
+                            Text(
+                              'Tap to select customer',
+                              style: PosTheme.small.copyWith(
+                                  color: PosTheme.textHint),
+                            ),
+                        ],
+                      ),
+                    ),
+                    const Icon(Icons.keyboard_arrow_down_rounded,
+                        size: 18, color: PosTheme.textHint),
+                  ],
+                ),
               ),
-              onChanged: _onNameChanged,
             ),
           ),
-          const SizedBox(width: 12),
-          // Phone
-          Expanded(
-            child: TextField(
-              controller: _phoneCtrl,
-              style: const TextStyle(fontSize: 13),
-              keyboardType: TextInputType.phone,
-              decoration: InputDecoration(
-                labelText: 'Phone',
-                prefixIcon: const Icon(Icons.phone_outlined, size: 18),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(PosTheme.radiusSm),
+          const SizedBox(width: 8),
+          // ── Add new customer button ────────────────────────────────
+          SizedBox(
+            height: 46,
+            child: ElevatedButton.icon(
+              onPressed: _openNewCustomerForm,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: PosTheme.primary,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 12, vertical: 0),
+                shape: RoundedRectangleBorder(
+                  borderRadius:
+                      BorderRadius.circular(PosTheme.radiusSm),
                 ),
-                contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 12, vertical: 10),
-                isDense: true,
+                elevation: 0,
               ),
-              onChanged: (v) => widget.provider.setCustomerPhone(v),
+              icon: const Icon(Icons.person_add_alt_1_rounded, size: 16),
+              label: const Text('Add',
+                  style: TextStyle(
+                      fontSize: 12, fontWeight: FontWeight.w600)),
             ),
           ),
         ],

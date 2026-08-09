@@ -366,7 +366,21 @@ class BillingService:
             for item in items:
                 self._deduct_stock(item.get("product_id"), float(item.get("quantity", 0)))
 
-            bill = Bill.from_dict({**payload, "bill_number": bill_number, "date": now.isoformat()})
+            # ── 4. Generate and upload company invoice PDF to bucket ────
+            try:
+                self._generate_and_upload_company_pdf(bill_number)
+                print(f"[create_bill] Company PDF uploaded to bucket: {bill_number}")
+            except Exception as pdf_exc:
+                import traceback; traceback.print_exc()
+                print(f"[create_bill] WARNING: Company PDF generation failed: {pdf_exc}")
+                # Non-fatal - bill is already saved, PDF can be regenerated later
+
+            bill = Bill.from_dict({
+                **payload,
+                "customer_id": 0,  # Not stored in DB, placeholder for model
+                "bill_number": bill_number,
+                "date": now.isoformat()
+            })
             return {
                 "success": True,
                 "message": "Bill Saved Successfully",
@@ -469,11 +483,31 @@ class BillingService:
             row.get("erp_billing_system_items") or [],
             key=lambda x: x.get("sno", 0)
         )
+
+        # Try to get customer_name and unit from the company invoice table
+        company_units: dict[int, str] = {}
+        customer_name_from_company = ""
+        try:
+            sb = _get_supabase()
+            bill_no = row["bill_no"]
+            comp_rows = (
+                sb.table("erp_billing_system_company")
+                .select("customer_name, erp_billing_system_company_items(sno, unit)")
+                .eq("invoice_no", bill_no)
+                .execute()
+            ).data
+            if comp_rows:
+                customer_name_from_company = comp_rows[0].get("customer_name") or ""
+                for ci in (comp_rows[0].get("erp_billing_system_company_items") or []):
+                    company_units[ci.get("sno", 0)] = ci.get("unit") or "Nos"
+        except Exception:
+            pass
+
         bill_items = [
             {
                 "product_id":       None,
                 "product_name":     it["description"],
-                "unit":             "Nos",
+                "unit":             company_units.get(it.get("sno", 0), "Nos"),
                 "quantity":         float(it["quantity"]),
                 "rate":             float(it["rate"]),
                 "discount_percent": 0.0,
@@ -487,7 +521,7 @@ class BillingService:
             "bill_number":    row["bill_no"],
             "date":           f"{row['bill_date']}T{row.get('bill_time', '00:00:00')}",
             "customer_id":    0,
-            "customer_name":  row.get("business_name", "VELA AGENCY"),
+            "customer_name":  customer_name_from_company or row.get("business_name", "Walk-in Customer"),
             "customer_phone": "",
             "payment_type":   row.get("payment_mode", "Cash"),
             "sales_type":     "Retail",
@@ -524,6 +558,29 @@ class BillingService:
             "total_products":  len(self._products),
             "total_customers": len(self._customers),
         }
+
+    # ------------------------------------------------------------------
+    # Company PDF Generation and Upload
+    # ------------------------------------------------------------------
+
+    def _generate_and_upload_company_pdf(self, bill_number: str) -> None:
+        """
+        Generate company invoice PDF from DB and upload to erp_billing_system_company bucket.
+        This is called automatically after bill creation.
+        """
+        # Import here to avoid circular imports
+        from routes.invoice_export import _generate_company_invoice_pdf
+        
+        pdf_bytes = _generate_company_invoice_pdf(bill_number)
+        file_name = f"{bill_number}.pdf"
+        
+        sb = _get_supabase()
+        sb.storage.from_("erp_billing_system_company").upload(
+            path=file_name,
+            file=pdf_bytes,
+            file_options={"content-type": "application/pdf", "upsert": "true"},
+        )
+        print(f"[_generate_and_upload_company_pdf] SUCCESS: Uploaded {file_name} to erp_billing_system_company bucket")
 
     # ------------------------------------------------------------------
     # Validation
