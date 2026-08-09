@@ -12,6 +12,7 @@ import 'screens/customers_screen.dart';
 import 'screens/dashboard_screen.dart';
 import 'screens/products_screen.dart';
 import 'screens/settings_screen.dart';
+import 'screens/login_screen.dart';
 import 'screens/splash_screen.dart';
 import 'screens/consolidated_invoice_screen.dart';
 import 'utils/constants.dart';
@@ -61,6 +62,7 @@ class BillingApp extends StatelessWidget {
         // ── Named routes ──────────────────────────────────────────────
         routes: {
           AppConstants.routeSplash: (_) => const SplashScreen(),
+          AppConstants.routeLogin: (_) => const LoginScreen(),
           AppConstants.routeDashboard: (_) => const DashboardScreen(),
           AppConstants.routeBilling: (_) => const PosBillingScreen(),
           AppConstants.routeProducts: (_) => const ProductsScreen(),

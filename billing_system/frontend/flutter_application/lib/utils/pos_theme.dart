@@ -7,10 +7,10 @@ class PosTheme {
   PosTheme._();
 
   // ─── Palette ────────────────────────────────────────────────────────────
-  static const Color primary      = Color(0xFF1565C0);
-  static const Color primaryDark  = Color(0xFF003C8F);
-  static const Color primaryLight = Color(0xFF42A5F5);
-  static const Color primarySoft  = Color(0xFFE3F2FD); // header / hover tint
+  static const Color primary      = Color(0xFF2E7D32);
+  static const Color primaryDark  = Color(0xFF1B5E20);
+  static const Color primaryLight = Color(0xFF388E3C);
+  static const Color primarySoft  = Color(0xFFE8F5E9); // header / hover tint
 
   static const Color background   = Color(0xFFF8F9FA);
   static const Color surface      = Color(0xFFFFFFFF);
@@ -30,11 +30,11 @@ class PosTheme {
   static const Color danger       = Color(0xFFC62828);
   static const Color dangerLight  = Color(0xFFFFEBEE);
 
-  static const Color grandTotalBg = Color(0xFF1565C0);
+  static const Color grandTotalBg = Color(0xFF2E7D32);
 
   // ─── Avatar palette (cycling for product initials) ───────────────────
   static const List<Color> avatarColors = [
-    Color(0xFF1565C0), // blue
+    Color(0xFF2E7D32), // green
     Color(0xFF00695C), // teal
     Color(0xFF6A1B9A), // purple
     Color(0xFFAD1457), // pink

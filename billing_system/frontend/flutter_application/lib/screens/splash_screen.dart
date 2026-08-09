@@ -53,7 +53,7 @@ class _SplashScreenState extends State<SplashScreen>
       setState(() => _statusMessage = 'Connected ✓');
       await Future.delayed(const Duration(milliseconds: 600));
       if (mounted) {
-        Navigator.pushReplacementNamed(context, AppConstants.routeDashboard);
+        Navigator.pushReplacementNamed(context, AppConstants.routeLogin);
       }
     } else {
       setState(() {
@@ -62,7 +62,7 @@ class _SplashScreenState extends State<SplashScreen>
       });
       await Future.delayed(const Duration(seconds: 2));
       if (mounted) {
-        Navigator.pushReplacementNamed(context, AppConstants.routeDashboard);
+        Navigator.pushReplacementNamed(context, AppConstants.routeLogin);
       }
     }
   }
@@ -92,21 +92,6 @@ class _SplashScreenState extends State<SplashScreen>
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  // Logo / icon
-                  Container(
-                    width: 100,
-                    height: 100,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(24),
-                    ),
-                    child: const Icon(
-                      Icons.point_of_sale,
-                      size: 64,
-                      color: Colors.white,
-                    ),
-                  ),
-                  const SizedBox(height: 28),
                   const Text(
                     'ERP Billing System',
                     style: TextStyle(

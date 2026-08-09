@@ -49,7 +49,7 @@ class PosSummarySection extends StatelessWidget {
           ),
           decoration: BoxDecoration(
             gradient: const LinearGradient(
-              colors: [Color(0xFF1565C0), Color(0xFF1976D2)],
+              colors: [Color(0xFF1B5E20), Color(0xFF388E3C)],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),

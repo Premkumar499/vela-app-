@@ -5,6 +5,7 @@ import '../models/customer.dart';
 import '../models/product.dart';
 import '../providers/billing_provider.dart';
 import '../services/api_service.dart';
+import '../services/invoice_export_service.dart';
 import '../utils/constants.dart';
 import '../utils/pos_theme.dart';
 import '../widgets/pos_bill_item_row.dart';
@@ -115,6 +116,18 @@ class _PosBillingScreenState extends State<PosBillingScreen> {
     if (result.success) {
       final billNum = result.data?['bill_number'] as String? ?? 'SAVED';
       setState(() => _invoiceNum = billNum);
+
+      // IMMEDIATELY generate company invoice PDF after bill is saved
+      print('[PosBillingScreen] Bill saved: $billNum, generating company invoice...');
+      try {
+        final companyResult = await InvoiceExportService.generateCompanyInvoice(billNum);
+        print('[PosBillingScreen] Company invoice result: ${companyResult['success']}, message: ${companyResult['message']}');
+        if (companyResult['success'] != true) {
+          print('[PosBillingScreen] WARNING: Company invoice generation failed');
+        }
+      } catch (e) {
+        print('[PosBillingScreen] ERROR generating company invoice: $e');
+      }
 
       // Build receipt JSON from current bill state
       final now = DateTime.now();
@@ -727,7 +740,7 @@ class _BillTableHeader extends StatelessWidget {
         horizontal: PosTheme.padMd, vertical: 8,
       ),
       decoration: const BoxDecoration(
-        color: Color(0xFFF0F4FF),
+        color: Color(0xFFF1F8E9),
         border: Border(bottom: BorderSide(color: PosTheme.border)),
       ),
       child: Row(

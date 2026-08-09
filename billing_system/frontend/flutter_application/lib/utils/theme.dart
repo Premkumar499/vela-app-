@@ -8,14 +8,14 @@ class AppTheme {
   // -------------------------------------------------------------------------
   // Colours
   // -------------------------------------------------------------------------
-  static const Color primary = Color(0xFF1565C0);       // Blue 800
-  static const Color primaryDark = Color(0xFF003c8f);   // Blue 900
-  static const Color primaryLight = Color(0xFF1976D2);  // Blue 700
-  static const Color accent = Color(0xFF0288D1);        // Light Blue 700
+  static const Color primary = Color(0xFF2E7D32);       // Green 800
+  static const Color primaryDark = Color(0xFF1B5E20);   // Green 900
+  static const Color primaryLight = Color(0xFF388E3C);  // Green 700
+  static const Color accent = Color(0xFF43A047);        // Green 600
 
   static const Color background = Color(0xFFF5F5F5);
   static const Color surface = Colors.white;
-  static const Color tableHeaderColor = Color(0xFFE3F2FD); // Blue 50 (colour only)
+  static const Color tableHeaderColor = Color(0xFFE8F5E9); // Green 50 (colour only)
   static const Color tableRowAlt = Color(0xFFFAFAFA);
   static const Color tableBorder = Color(0xFFBDBDBD);   // Grey 400
 

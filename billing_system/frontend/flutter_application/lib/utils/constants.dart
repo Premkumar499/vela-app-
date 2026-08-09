@@ -27,6 +27,7 @@ class AppConstants {
   // Route names
   // -------------------------------------------------------------------------
   static const String routeSplash = '/';
+  static const String routeLogin = '/login';
   static const String routeDashboard = '/dashboard';
   static const String routeBilling = '/billing';
   static const String routeProducts = '/products';

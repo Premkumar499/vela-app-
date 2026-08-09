@@ -32,11 +32,20 @@ class _BilingualBillDashboardState extends State<BilingualBillDashboard> {
   void initState() {
     super.initState();
     _loadFromReceiptData(widget.receiptData);
+    
+    // Schedule auto-save after widget is fully built
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      print('[BilingualBillDashboard] PostFrameCallback triggered');
+      
       await _translateAll();
+      print('[BilingualBillDashboard] Translation complete, bill_no: $_billNo');
+      
       // Small delay to ensure the widget is fully painted after translation
       await Future.delayed(const Duration(milliseconds: 400));
-      _autoSaveBoth();
+      print('[BilingualBillDashboard] Delay complete, calling _autoSaveBoth');
+      
+      await _autoSaveBoth();  // MUST await to catch errors!
+      print('[BilingualBillDashboard] _autoSaveBoth completed');
     });
   }
 
@@ -98,49 +107,47 @@ class _BilingualBillDashboardState extends State<BilingualBillDashboard> {
   /// Automatically save: customer receipt → erp_billing_system,
   /// company invoice → erp_billing_system_company (server-side PDF from DB).
   Future<void> _autoSaveBoth() async {
-    if (_autoSaved || _billNo.isEmpty || !mounted) return;
+    if (_autoSaved || _billNo.isEmpty || !mounted) {
+      print('[BilingualBillDashboard] _autoSaveBoth skipped: autoSaved=$_autoSaved, billNo=$_billNo, mounted=$mounted');
+      return;
+    }
     _autoSaved = true;
 
-    // 1. Customer bill: capture receipt widget → erp_billing_system bucket
-    await InvoiceExportService.saveInvoiceAsImage(
-      widgetKey: _receiptKey,
-      invoiceNumber: _billNo,
-      isCompanyInvoice: false,
-    );
+    print('[BilingualBillDashboard] _autoSaveBoth START for bill: $_billNo');
 
-    if (!mounted) return;
+    try {
+      // 1. Customer bill: capture receipt widget → erp_billing_system bucket
+      print('[BilingualBillDashboard] Step 1: Capturing customer receipt...');
+      final customerResult = await InvoiceExportService.saveInvoiceAsImage(
+        widgetKey: _receiptKey,
+        invoiceNumber: _billNo,
+        isCompanyInvoice: false,
+      );
+      print('[BilingualBillDashboard] Customer bill result: ${customerResult['success']}, message: ${customerResult['message']}');
 
-    // 2. Company invoice: server-side PDF from DB → erp_billing_system_company bucket
-    //    Pass bill data as fallback in case the DB insert was blocked by RLS
-    final now = DateTime.now();
-    final totalAmount = _totalAmount;
+      if (!mounted) {
+        print('[BilingualBillDashboard] Widget unmounted after customer bill, stopping');
+        return;
+      }
 
-    final fallback = {
-      'customer_name':    widget.receiptData['customer']?['name'] ?? 'Walk-in Customer',
-      'customer_phone':   '',
-      'payment_mode':     _paymentMode,
-      'transaction_id':   _billNo,
-      'total_amount':     totalAmount,
-      'amount_in_words':  '',
-      'invoice_date':     '${now.year}-${now.month.toString().padLeft(2,'0')}-${now.day.toString().padLeft(2,'0')}',
-      'invoice_time':     '${now.hour.toString().padLeft(2,'0')}:${now.minute.toString().padLeft(2,'0')}:${now.second.toString().padLeft(2,'0')}',
-      'items': _items.asMap().entries.map((e) {
-        final i    = e.key;
-        final item = e.value;
-        final qty  = item['qty']  as double;
-        final rate = item['rate'] as double;
-        return {
-          'sno':         i + 1,
-          'description': item['description'] ?? '',
-          'unit':        item['unit'] ?? 'Nos',
-          'quantity':    qty,
-          'rate':        rate,
-          'amount':      qty * rate,
-        };
-      }).toList(),
-    };
+      // Small delay to ensure DB transaction is fully committed
+      print('[BilingualBillDashboard] Waiting 500ms for DB commit...');
+      await Future.delayed(const Duration(milliseconds: 500));
 
-    await InvoiceExportService.generateCompanyInvoice(_billNo, fallbackData: fallback);
+      // 2. Company invoice: server-side PDF from DB → erp_billing_system_company bucket
+      print('[BilingualBillDashboard] Step 2: Calling generateCompanyInvoice for: $_billNo');
+      final companyResult = await InvoiceExportService.generateCompanyInvoice(_billNo);
+      print('[BilingualBillDashboard] Company invoice result: ${companyResult['success']}, message: ${companyResult['message']}');
+
+      if (companyResult['success'] != true) {
+        print('[BilingualBillDashboard] ❌ ERROR: Company invoice failed: ${companyResult['message']}');
+      } else {
+        print('[BilingualBillDashboard] ✅ SUCCESS: Company invoice uploaded to bucket');
+      }
+    } catch (e, stackTrace) {
+      print('[BilingualBillDashboard] ❌ EXCEPTION in _autoSaveBoth: $e');
+      print('[BilingualBillDashboard] Stack trace: $stackTrace');
+    }
   }
 
   Future<void> _saveReceipt() async {    setState(() => _isSaving = true);
@@ -229,36 +236,36 @@ class _BilingualBillDashboardState extends State<BilingualBillDashboard> {
         ],
       ),
       body: Container(
-        color: const Color(0xFF0F172A),
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (_isTranslating)
-                  const Padding(
-                    padding: EdgeInsets.only(bottom: 12),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        SizedBox(
-                          width: 16,
-                          height: 16,
-                          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.blueAccent),
+            color: const Color(0xFF0F172A),
+            child: Center(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (_isTranslating)
+                      const Padding(
+                        padding: EdgeInsets.only(bottom: 12),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SizedBox(
+                              width: 16,
+                              height: 16,
+                              child: CircularProgressIndicator(strokeWidth: 2, color: Colors.blueAccent),
+                            ),
+                            SizedBox(width: 8),
+                            Text('Translating items to Tamil...',
+                                style: TextStyle(color: Colors.white70, fontSize: 12)),
+                          ],
                         ),
-                        SizedBox(width: 8),
-                        Text('Translating items to Tamil...',
-                            style: TextStyle(color: Colors.white70, fontSize: 12)),
-                      ],
-                    ),
-                  ),
-                _buildThermalReceipt(),
-              ],
+                      ),
+                    _buildThermalReceipt(),
+                  ],
+                ),
+              ),
             ),
           ),
-        ),
-      ),
     );
   }
 
