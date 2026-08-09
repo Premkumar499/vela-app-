@@ -95,12 +95,13 @@ class _BilingualBillDashboardState extends State<BilingualBillDashboard> {
     }
   }
 
-  /// Automatically save both customer bill and company copy silently on load.
+  /// Automatically save: customer receipt → erp_billing_system,
+  /// company invoice → erp_billing_system_company (server-side PDF from DB).
   Future<void> _autoSaveBoth() async {
     if (_autoSaved || _billNo.isEmpty || !mounted) return;
     _autoSaved = true;
 
-    // Save customer bill copy
+    // 1. Customer bill: capture receipt widget → erp_billing_system bucket
     await InvoiceExportService.saveInvoiceAsImage(
       widgetKey: _receiptKey,
       invoiceNumber: _billNo,
@@ -109,12 +110,37 @@ class _BilingualBillDashboardState extends State<BilingualBillDashboard> {
 
     if (!mounted) return;
 
-    // Save company invoice copy (same receipt, different folder)
-    await InvoiceExportService.saveInvoiceAsImage(
-      widgetKey: _receiptKey,
-      invoiceNumber: _billNo,
-      isCompanyInvoice: true,
-    );
+    // 2. Company invoice: server-side PDF from DB → erp_billing_system_company bucket
+    //    Pass bill data as fallback in case the DB insert was blocked by RLS
+    final now = DateTime.now();
+    final totalAmount = _totalAmount;
+
+    final fallback = {
+      'customer_name':    widget.receiptData['customer']?['name'] ?? 'Walk-in Customer',
+      'customer_phone':   '',
+      'payment_mode':     _paymentMode,
+      'transaction_id':   _billNo,
+      'total_amount':     totalAmount,
+      'amount_in_words':  '',
+      'invoice_date':     '${now.year}-${now.month.toString().padLeft(2,'0')}-${now.day.toString().padLeft(2,'0')}',
+      'invoice_time':     '${now.hour.toString().padLeft(2,'0')}:${now.minute.toString().padLeft(2,'0')}:${now.second.toString().padLeft(2,'0')}',
+      'items': _items.asMap().entries.map((e) {
+        final i    = e.key;
+        final item = e.value;
+        final qty  = item['qty']  as double;
+        final rate = item['rate'] as double;
+        return {
+          'sno':         i + 1,
+          'description': item['description'] ?? '',
+          'unit':        item['unit'] ?? 'Nos',
+          'quantity':    qty,
+          'rate':        rate,
+          'amount':      qty * rate,
+        };
+      }).toList(),
+    };
+
+    await InvoiceExportService.generateCompanyInvoice(_billNo, fallbackData: fallback);
   }
 
   Future<void> _saveReceipt() async {    setState(() => _isSaving = true);

@@ -282,13 +282,6 @@ class _PosBillingScreenState extends State<PosBillingScreen> {
             label: const Text('New Bill',
                 style: TextStyle(color: Colors.white70, fontSize: 13)),
           ),
-          const SizedBox(width: 4),
-          // Settings
-          IconButton(
-            icon: const Icon(Icons.settings_outlined, color: Colors.white70),
-            onPressed: () => Navigator.pushNamed(context, AppConstants.routeSettings),
-            tooltip: 'Settings',
-          ),
           const SizedBox(width: 8),
         ],
       ),

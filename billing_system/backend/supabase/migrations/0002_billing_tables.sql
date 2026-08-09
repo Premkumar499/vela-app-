@@ -67,3 +67,12 @@ CREATE TABLE IF NOT EXISTS erp_billing_system_company_items (
 -- Indexes for fast lookup by bill/invoice number
 CREATE INDEX IF NOT EXISTS idx_erp_billing_bill_no     ON erp_billing_system(bill_no);
 CREATE INDEX IF NOT EXISTS idx_erp_billing_company_no  ON erp_billing_system_company(invoice_no);
+
+-- ---------------------------------------------------------------
+-- 5. DISABLE RLS so service-role backend can read/write freely
+--    (Run this in Supabase SQL Editor if inserts are failing)
+-- ---------------------------------------------------------------
+ALTER TABLE erp_billing_system              DISABLE ROW LEVEL SECURITY;
+ALTER TABLE erp_billing_system_items        DISABLE ROW LEVEL SECURITY;
+ALTER TABLE erp_billing_system_company      DISABLE ROW LEVEL SECURITY;
+ALTER TABLE erp_billing_system_company_items DISABLE ROW LEVEL SECURITY;

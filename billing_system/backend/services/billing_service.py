@@ -338,11 +338,13 @@ class BillingService:
             header_resp = sb.table("erp_billing_system").insert(bill_header).execute()
             bill_id = header_resp.data[0]["bill_id"]
             sb.table("erp_billing_system_items").insert(_user_line_rows(bill_id)).execute()
+            print(f"[create_bill] User bill saved to DB: {bill_number}")
 
-            # ── 2. Company Bill table (same data) ───────────────────────
+            # ── 2. Company Bill table ───────────────────────────────────
             company_header = {
                 "invoice_no":      bill_number,
                 "invoice_date":    now.strftime("%Y-%m-%d"),
+                "invoice_time":    now.strftime("%H:%M:%S"),
                 "customer_name":   payload.get("customer_name", "Walk-in Customer"),
                 "customer_phone":  payload.get("customer_phone", "") or "",
                 "payment_mode":    payload.get("payment_type", "Cash"),
@@ -351,9 +353,14 @@ class BillingService:
                 "total_amount":    grand_total,
                 "amount_in_words": _amount_in_words(grand_total),
             }
-            company_resp = sb.table("erp_billing_system_company").insert(company_header).execute()
-            invoice_id = company_resp.data[0]["invoice_id"]
-            sb.table("erp_billing_system_company_items").insert(_company_line_rows(invoice_id)).execute()
+            try:
+                company_resp = sb.table("erp_billing_system_company").insert(company_header).execute()
+                invoice_id = company_resp.data[0]["invoice_id"]
+                sb.table("erp_billing_system_company_items").insert(_company_line_rows(invoice_id)).execute()
+                print(f"[create_bill] Company invoice saved to DB: {bill_number}")
+            except Exception as company_exc:
+                import traceback; traceback.print_exc()
+                print(f"[create_bill] WARNING: Company invoice DB insert failed: {company_exc}")
 
             # ── 3. Deduct stock in memory ───────────────────────────────
             for item in items:
